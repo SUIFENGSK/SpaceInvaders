@@ -8,6 +8,7 @@ class Player
     int lastTime = 0;
     ArrayList<Missile> missile = new ArrayList<Missile>();
     Pic playerShipImg;
+    int missileUpgrade = 0;
     Player(float playerSize, String shipName) 
     {
         this.playerSize = playerSize;
@@ -54,8 +55,9 @@ class Player
     }
     void MissileLaunch()
     {
-        time= millis() - lastTime;
-        if (time > 700) {
+        time = millis() - lastTime;
+        if (missileUpgrade > 400) missileUpgrade = 400;
+        if (time > 700 - missileUpgrade) {
             lastTime = millis();
             missile.add(new Missile(x, y, "PLAYER"));
         }
@@ -74,7 +76,7 @@ class Player
                 {
                     missile.remove(i);
                 }
-        }
+            }
         }
         //println(missile.size());
     }

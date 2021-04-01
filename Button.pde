@@ -30,9 +30,9 @@ class Button
     void render() 
     {
         if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) {
-            R = 200;
-            G = 100;
-            B = 150;
+            R = 138;
+            G = 217;
+            B = 78;
         } else {
             R = 225;
             G = 225;
