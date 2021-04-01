@@ -35,7 +35,7 @@ Player player;
 ArrayList < Enemy > enemy;
 ArrayList < ExplosionGif > explosionGif;
 ArrayList < Button > button;
-int initEnemy = 100;
+int initEnemy = 10;
 float enemySize = 40, playerSize = 70;
 int remainingLife;
 int score;
@@ -46,7 +46,7 @@ boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = 
 String shipName;
 UiBooster booster;
 ListElement selectedElement;
-int degreeOfDifficulty;
+int degreeOfDifficulty=5,defaultDegreeOfDifficulty = 5;
 FilledForm form;
 public void setup()
 {
@@ -56,8 +56,8 @@ public void setup()
 }
 public void draw()
 {
-    if (remainingLife == 0 && mousePressed)
-        {
+    if (remainingLife == 0 && mousePressed) //init Game
+    {
         spaceBgm.stop();
         ResetGame();
         isNewGame = true;
@@ -77,12 +77,13 @@ public void draw()
         imageMode(CENTER);    
         frameRate(60);
         image(spaceAnimation, width / 2, height / 2, width, height); 
-        if (remainingLife > 0) {
+        if (remainingLife > 0 && enemy.size()>0) {
             player.Display();
             EnemyMove();
             PlayerMissileJudgment();
             EnemyMissileJudgment();
             CollideWithTheEnemy();
+            CheckEnemyIsAlive();
             DisplayInfo();
         } else {
             spaceBgm.amp(0.2f);
@@ -96,13 +97,13 @@ public void draw()
         booster = new UiBooster();
     do {
             form = new UiBooster()
-               .createForm("Your settings")
+               .createForm("Personalized settings")
                .addList("Choose your ship", 
                 new ListElement("Ship 1(Default ship)", "Green and strong", dataPath("PlayerShip01.png")), 
                 new ListElement("Ship 2", "Green and strong", dataPath("PlayerShip02.png")), 
                 new ListElement("Ship 3", "Green and strong", dataPath("PlayerShip03.png")), 
                 new ListElement("Ship 4", "Green and strong", dataPath("PlayerShip04.png")))
-               .addSlider("Difficulty settings", 1, 10, 5, 3, 1)
+               .addSlider("Difficulty settings (Default degree of difficulty is 5)", 1, 10, 5, 3, 1)
                .andWindow()
                .setSize(500, 625)
                .setUndecorated()
@@ -135,12 +136,32 @@ public void draw()
         if (listValue.equals("Ship 3")) shipName = "PlayerShip03";
         if (listValue.equals("Ship 4")) shipName = "PlayerShip04";
         player = new Player(playerSize, shipName);
-        degreeOfDifficulty = form.getByLabel("Difficulty settings").asInt();
+        degreeOfDifficulty = form.getByLabel("Difficulty settings (Default degree of difficulty is 5)").asInt();
+        for (int i = 0;i < enemy.size();i++)
+        {
+            enemy.get(i).xSpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
+            enemy.get(i).ySpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
+        }
         //println(degreeOfDifficulty);
     } else if (button.get(2).action) //Leaderboard
         {
         mousePressed = false;
         button.get(2).action = false;
+        CalculateResult();
+        int displayNum;
+        String textData = "Leaderboard - TOP 5\n\n";
+        if (userTopListName.size()>= 5) displayNum = 5;
+        else displayNum = userTopListName.size();
+        for (int i = 0; i < displayNum; i++)
+        {
+            textData +=userTopListName.get(i);
+            textData +=": ";
+            textData +=userTopListScore.get(i);
+            textData +="\n\n";            
+        }
+        booster = new UiBooster();
+        booster.showInfoDialog(textData);
+        
     } else if (button.get(3).action) //Help
         {
         mousePressed = false;
@@ -148,9 +169,8 @@ public void draw()
         booster = new UiBooster();
         booster.showPictures("My pictures",new String[] {
             dataPath("PlayerShip01.png"),
-            dataPath("PlayerShip02.png"),
-            dataPath("PlayerShip03.png")
-            });
+                dataPath("PlayerShip02.png"),
+                dataPath("PlayerShip03.png")});
     } else if (button.get(4).action) //Exit
         {
         mousePressed = false;
@@ -202,13 +222,14 @@ public void GUIStartLoop()
     text("Space Invaders", width / 2, height * 1.5f / 8);
     textSize(20);
     text("Developed by Shuokai", width / 2, height * 7 / 8);
-    for (int i = 0; i < button.size(); i++)
-        {
+    for (int i = 0; i < button.size(); i++) {
         button.get(i).createButton();
     }
 }
 public void EnemyMove()
 {
+    if(enemy.size()==0) return;
+    else enemy.get(0).yMove = true;
     for (int i = 0; i < enemy.size(); i++) 
         {
         //Prevent collision
@@ -224,10 +245,18 @@ public void EnemyMove()
         if (enemy.get(i).y>height + enemySize)
         {
             enemy.remove(i);
-            enemy.get(0).yMove = true;
         }
         //println(i, enemy.get(0).yMove);
     }
+}
+public void CheckEnemyIsAlive()
+{
+    for(int i=0;i<enemy.size();i++)
+    {
+        println(i,enemy.get(i).isDestroyed,enemy.get(i).missile.size(),enemy.get(i).yMove);
+        if(enemy.get(i).isDestroyed && enemy.get(i).missile.size()==0) enemy.remove(i);
+    }
+    println();
 }
 public void PlayerMissileJudgment()
 {
@@ -239,11 +268,14 @@ public void PlayerMissileJudgment()
                 player.missile.get(i).y>enemy.get(j).y - enemySize / 2 && player.missile.get(i).y<enemy.get(j).y + enemySize / 2)
             {
                 explosionGif.add(new ExplosionGif (player.missile.get(i).x, player.missile.get(i).y, this));
-                    explosionBgm.play();
-                enemy.remove(j);
-                enemy.get(0).yMove = true;
+                explosionBgm.play();
+                enemy.get(j).isDestroyed=true;
+                enemy.get(j).y=-height;
+                //enemy.remove(j);
                 player.missile.remove(i);
                 score +=100;
+                if(enemy.size()==0) break;
+                enemy.get(0).yMove = true;                
                 break;
             }
         }
@@ -260,7 +292,7 @@ public void EnemyMissileJudgment()
                 enemy.get(i).missile.get(j).y>player.y - playerSize / 2 && enemy.get(i).missile.get(j).y<player.y + playerSize / 2)
             {
                 explosionGif.add(new ExplosionGif (enemy.get(i).missile.get(j).x, enemy.get(i).missile.get(j).y, this));
-                    explosionBgm.play();
+                explosionBgm.play();
                 enemy.get(i).missile.remove(j);
                 remainingLife--;
                 score -=50;
@@ -281,12 +313,15 @@ public void CollideWithTheEnemy()
            (enemy.get(i).y - enemySize / 2>player.y - playerSize / 2 && enemy.get(i).y - enemySize / 2<player.y + playerSize / 2)))
         {
             explosionGif.add(new ExplosionGif ((enemy.get(i).x + player.x) / 2,(enemy.get(i).y + player.y) / 2, this));
-                explosionBgm.play();
-            enemy.remove(i);
-            enemy.get(0).yMove = true;
+            explosionBgm.play();
+            enemy.get(i).isDestroyed=true;
+            enemy.get(i).y=-height;
+            //enemy.remove(i);
             remainingLife--;
             score -=50;
             if (score < 0) score = 0;
+            if(enemy.size()==0) break;
+            enemy.get(0).yMove = true;
             break;
         }
     }
@@ -303,6 +338,8 @@ public void DisplayInfo()
     text(remainingLife, 430, 40);
     text("Score:", 365, 60);
     text(score, 430, 60);
+    text("Enemy:", 365, 80);
+    text(enemy.size(), 430, 80);
 }
 public void CalculateAndDisplayTheFinalResult()
 {
@@ -324,23 +361,7 @@ public void CalculateAndDisplayTheFinalResult()
                 }
             }
         }
-        int tempScore;
-        String tempName;
-        for (int i = 0; i < userTopListName.size() - 1; i++) 
-        {
-            for (int j = 0; j < userTopListName.size() - 1 - i; j++) 
-            {
-                if (userTopListScore.get(j) < userTopListScore.get(j + 1)) 
-                {
-                    tempScore = userTopListScore.get(j);
-                    userTopListScore.set(j, userTopListScore.get(j + 1)); 
-                    userTopListScore.set(j + 1, tempScore); 
-                    tempName = userTopListName.get(j);
-                    userTopListName.set(j, userTopListName.get(j + 1));
-                    userTopListName.set(j + 1, tempName);
-                }
-            }
-        }
+        CalculateResult();
         SaveData();
     }
     fill(255);
@@ -432,6 +453,26 @@ public void CreateUser()
     }
     initName = false;
 }
+public void CalculateResult()
+{
+    int tempScore;
+    String tempName;
+    for (int i = 0; i < userTopListName.size() - 1; i++) 
+        {
+        for (int j = 0; j < userTopListName.size() - 1 - i; j++) 
+            {
+            if (userTopListScore.get(j) < userTopListScore.get(j + 1)) 
+                {
+                tempScore = userTopListScore.get(j);
+                userTopListScore.set(j, userTopListScore.get(j + 1)); 
+                userTopListScore.set(j + 1, tempScore); 
+                tempName = userTopListName.get(j);
+                userTopListName.set(j, userTopListName.get(j + 1));
+                userTopListName.set(j + 1, tempName);
+            }
+        }
+    }
+}
 class Button 
 {
     float x, y;
@@ -497,7 +538,7 @@ class Enemy
     float xSpeed = 3, ySpeed = 3;
     int time = 0;
     int lastTime = 0;
-    boolean xyDirection, yMove = false;
+    boolean xyDirection, yMove = false, isDestroyed = false;
     ArrayList<Missile> missile = new ArrayList<Missile>();
     Pic enemyShipImg = new Pic("EnemyShip");
     Enemy(float y, float enemySize)
@@ -508,37 +549,45 @@ class Enemy
     }
     public void Move()
     {
-        time= millis() - lastTime;
-        imageMode(CENTER);
-        enemyShipImg.display(x,y,enemySize,enemySize);
-        if (time > 500) {
-            lastTime = millis();
-           if (random(0, 1)<0.5f) xyDirection = false;
-            else xyDirection = true;
-        }
-        if (xyDirection) x +=xSpeed;
-        else if (yMove && !xyDirection) 
+        if (!isDestroyed) 
         {
-            y +=ySpeed;
-        } else
-        {
-            x +=xSpeed;
+            time = millis() - lastTime;
+            imageMode(CENTER);
+            enemyShipImg.display(x,y,enemySize,enemySize);
+            if (time > 500) {
+                lastTime = millis();
+                if (random(0, 1)<0.5f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.06f) xyDirection = false; //y-direction
+                else xyDirection = true; //x-direction
+            }
+            if (xyDirection) x += xSpeed;
+            else if (yMove && !xyDirection) 
+            {
+                y +=ySpeed;
+            } else
+            {
+                x +=xSpeed;
+            }
+            //println(x);
+            if (x > width - enemySize / 2 || x < enemySize / 2) xSpeed =- xSpeed;
+            if (x > width - enemySize / 2) x = width - enemySize / 2;
+            if (x < enemySize / 2) x = enemySize / 2;
+            if (y > 0 && y < height - 30) 
+            {
+                MissileAdd();
+            }
         }
-        //println(x);
-        if (x > width - enemySize / 2 || x < enemySize / 2) xSpeed =- xSpeed;
-        if (x > width - enemySize / 2) x = width - enemySize / 2;
-        if (x < enemySize / 2) x = enemySize / 2;
-        if (y > 0 && y < height - 30) 
+        MissileLaunch();
+        
+    }
+    public void MissileAdd()
+    {
+        if (!isDestroyed && random(0, 1)<0.01f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.001f) 
         {
-            MissileLaunch();
-        }
+            missile.add(new Missile(x, y, "ENEMY"));
+        }        
     }
     public void MissileLaunch()
     {
-        if (random(0, 1)<0.01f) 
-        {
-            missile.add(new Missile(x, y, "ENEMY"));
-        }
         if (missile.size()>0) {
             for (int i = 0; i < missile.size(); i++) 
             {
@@ -547,9 +596,9 @@ class Enemy
                 {
                     missile.remove(i);
                 }
+            }
         }
-        }
-        //println(missile.size());
+        //println(missile.size());F
     }
 }
 class ExplosionGif
