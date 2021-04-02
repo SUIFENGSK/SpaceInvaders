@@ -44,37 +44,45 @@ String userName = null;
 StringList userTopListName = new StringList();
 IntList userTopListScore = new IntList();
 boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
-boolean personalizedSettings = false;
-String shipName;
+boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime=true;
+String shipName, controllerMode = "Keyboard Mode";
 UiBooster booster;
 ListElement selectedElement;
 int degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
 FilledForm form;
+ProgressDialog dialog;
+Button exitButton;
 public void setup()
 {
     
+    if(isFirstTime){
+    WaitingDialog waitingDialog;
+    booster = new UiBooster();
+    waitingDialog = booster.showWaitingDialog("Starting", "Starting program");
+    //waitingDialog.setLargeMessage("Loading image...\nLoading animation...\nLoading background music...\nInitializing the game interface...");
+    delay(1500);
+    waitingDialog.close();
+    dialog = new UiBooster().showProgressDialog("Please wait", "Waiting", 0, 120);
+    dialog.setProgress(10);
+    dialog.setMessage("Starting program...");
     GUIInit();
+    dialog.setProgress(70);
+    dialog.setMessage("Initializing game data...");
     GameInit();
+    dialog.setProgress(120);
+    dialog.setMessage("Ready!");
+    delay(1000);
+    dialog.close();
+    }
+    else GameInit();
 }
 public void draw()
 {
-    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //init Game
-    {
-        spaceBgm.stop();
-        ResetGame();
-        isNewGame = true;
-        button.get(0).action = false;
-        button.get(1).action = false;
-        button.get(2).action = false;
-        button.get(3).action = false;
-        button.get(4).action = false;
-        mousePressed = false;
-    }
     if (!button.get(0).action && !button.get(1).action && !button.get(2).action && !button.get(3).action && !button.get(4).action) GUIStartLoop();
     else if (button.get(0).action) //new game
         {
-        mousePressed = false;
-        button.get(1).action = false;
+        //mousePressed = false;
+        //button.get(1).action = false;
         CreateUser();
         imageMode(CENTER);    
         frameRate(60);
@@ -88,6 +96,7 @@ public void draw()
             CollideWithTheEnemy();
             CheckEnemyIsAlive();
             DisplayInfo();
+            ExitGameButtonListener();
         } else {
             spaceBgm.amp(0.2f);
             CalculateAndDisplayTheFinalResult();
@@ -102,8 +111,9 @@ public void draw()
     do {
             form = new UiBooster()
                .createForm("Personalized settings")
+               .addSelection("Controller Mode", "Keyboard Mode", "Mouse Mode")
                .addList("Choose your ship", 
-                new ListElement("Ship 1(Default ship)", "Green and strong", dataPath("PlayerShip01.png")), 
+                new ListElement("Ship 1 (Default ship)", "Green and strong", dataPath("PlayerShip01.png")), 
                 new ListElement("Ship 2", "Green and strong", dataPath("PlayerShip02.png")), 
                 new ListElement("Ship 3", "Green and strong", dataPath("PlayerShip03.png")), 
                 new ListElement("Ship 4", "Green and strong", dataPath("PlayerShip04.png")))
@@ -112,11 +122,12 @@ public void draw()
                .andWindow()
                .setSize(500, 725)
                .setUndecorated()
-               .setPosition(width / 2 + 465, height / 2 - 250)
+               .setPosition(displayWidth / 2 - 500 / 2,displayHeight / 2 - 725 / 2)
                .save()
                .show();
             if (form.getByLabel("Choose your ship").getValue() == null) new UiBooster().showErrorDialog("You must choose a spaceship!", "ERROR");
         } while(form.getByLabel("Choose your ship").getValue() == null);
+        controllerMode = form.getByLabel("Controller Mode").asString();
         String value = form.getByLabel("Choose your ship").asString();
         String listValue = "";
         int count = 0;
@@ -135,11 +146,11 @@ public void draw()
             }
         }
         //println(listValue);
-        if (listValue.equals("Ship 1(Default ship)")) shipName = "PlayerShip01";
+        if (listValue.equals("Ship 1 (Default ship)")) shipName = "PlayerShip01";
         if (listValue.equals("Ship 2")) shipName = "PlayerShip02";
         if (listValue.equals("Ship 3")) shipName = "PlayerShip03";
         if (listValue.equals("Ship 4")) shipName = "PlayerShip04";
-        player = new Player(playerSize, shipName);
+        player = new Player(playerSize, shipName,controllerMode);
         initEnemy = form.getByLabel("Number of enemies (Default number of enemies is 50)").asInt();
         degreeOfDifficulty = form.getByLabel("Difficulty settings (Default degree of difficulty is 5)").asInt();
         enemy.clear();
@@ -184,11 +195,17 @@ public void draw()
         button.get(4).action = false;
         exit();
     }
+    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //init Game
+    {
+        ResetGame();        
+    }
 }
 public void GUIInit()
 {
     spaceAnimation = new Gif (this, "Space08.gif");
     spaceAnimation.loop();
+    dialog.setProgress(30);
+    dialog.setMessage("Loading image and animation...");
     explosionBgm = new SoundFile(this, "Explosion.mp3");
     explosionBgm.amp(0.5f);
     spaceBgm = new SoundFile(this, "Spacebgm.mp3");
@@ -196,12 +213,15 @@ public void GUIInit()
     spaceBgm.loop();
     itemBgm = new SoundFile(this, "Item.mp3");
     itemBgm.amp(0.5f);
+    dialog.setProgress(50);
+    dialog.setMessage("Initializing the game interface...");
     button = new ArrayList<Button>();
-    button.add(new Button(width / 2, height * 2.7f / 8, "New Game"));
-    button.add(new Button(width / 2, height * 3.45f / 8, "Personalized Settings"));
-    button.add(new Button(width / 2, height * 4.2f / 8, "Leaderboard"));
-    button.add(new Button(width / 2, height * 4.95f / 8, "Help"));
-    button.add(new Button(width / 2, height * 5.7f / 8, "Exit"));
+    button.add(new Button(width / 2, height * 2.7f / 8, "New Game",30));
+    button.add(new Button(width / 2, height * 3.45f / 8, "Personalized Settings",30));
+    button.add(new Button(width / 2, height * 4.2f / 8, "Leaderboard",30));
+    button.add(new Button(width / 2, height * 4.95f / 8, "Help",30));
+    button.add(new Button(width / 2, height * 5.7f / 8, "Exit",30));
+    exitButton = new Button(30,20,"Exit",16);
 }
 public void GameInit()
 {
@@ -213,10 +233,10 @@ public void GameInit()
     score = 0;
     if (!personalizedSettings) 
     {
-        player = new Player(playerSize);
+        player = new Player(playerSize,controllerMode);
         initEnemy = 50;
     }
-    else player = new Player(playerSize,shipName);
+    else player = new Player(playerSize,shipName,controllerMode);
     enemy = new ArrayList<Enemy>();
     item = new ArrayList<Item>();
     explosionGif = new ArrayList < ExplosionGif > ();
@@ -232,6 +252,7 @@ public void GameInit()
 }
 public void GUIStartLoop()
 {
+    spaceBgm.amp(1);
     imageMode(CENTER);  
     image(spaceAnimation, width / 2, height / 2, width, height);
     fill(255);
@@ -249,8 +270,7 @@ public void GUIStartLoop()
 public void DisplayAndCheckItem()
 {
     //println(player.missileUpgrade);
-    //- (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005
-    if (random(0, 1)<0.005f ) 
+    if (random(0, 1)<0.003f - (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005f) 
     {
         item.add(new Item(random(0,1)));
     }
@@ -266,7 +286,7 @@ public void DisplayAndCheckItem()
             {
                 remainingLife++;
                 itemBgm.play();
-                }
+            }
             else if (item.get(i).itemType == "MissileUp")
             {
                 player.missileUpgrade +=40;
@@ -275,7 +295,7 @@ public void DisplayAndCheckItem()
             else if (item.get(i).itemType == "UniqueSkill")
             {
                 itemBgm.play();
-                for (int j = enemy.size()-1;j >= 0;j--)
+                for (int j = enemy.size() - 1;j >= 0;j--)
                 {
                     if (enemy.get(j).y>0 && enemy.get(j).y<height + enemySize)
                     {
@@ -392,14 +412,14 @@ public void DisplayInfo()
     fill(255);
     textSize(16);
     textAlign(LEFT);
-    text("User:", 365, 20);
-    text(userName, 430, 20);
-    text("Life:", 365, 40);
-    text(remainingLife, 430, 40);
-    text("Score:", 365, 60);
-    text(score, 430, 60);
-    text("Enemy:", 365, 80);
-    text(enemy.size(), 430, 80);
+    text("User:", width * 6 / 8, 20);
+    text(userName, width * 7 / 8, 20);
+    text("Life:", width * 6 / 8, 40);
+    text(remainingLife, width * 7 / 8, 40);
+    text("Score:", width * 6 / 8, 60);
+    text(score, width * 7 / 8, 60);
+    text("Enemy:", width * 6 / 8, 80);
+    text(enemy.size(), width * 7 / 8, 80);
 }
 public void CalculateAndDisplayTheFinalResult()
 {
@@ -465,6 +485,15 @@ public void ResetGame()
 {
     enemy.clear();
     item.clear();
+    //spaceBgm.stop();
+    isNewGame = true;
+    button.get(0).action = false;
+    button.get(1).action = false;
+    button.get(2).action = false;
+    button.get(3).action = false;
+    button.get(4).action = false;
+    isFirstTime=false;
+    mousePressed = false;
     setup();
 }
 public void ImportData()
@@ -536,6 +565,35 @@ public void CalculateResult()
         }
     }
 }
+public void ExitGameButtonListener()
+{
+    exitButton.createButton();
+    if (exitButton.action)
+    {
+        mousePressed = false;
+        exitButton.action = false;
+        booster = new UiBooster();
+        booster.showConfirmDialog(
+            "Are you sure to exit the game? Please note that your game data will not be saved!",
+            "Exit Game",
+            new Runnable() {
+            public void run() {
+                exitIsConfirmed = true;
+            }
+        } ,
+        new Runnable() {
+            public void run() {
+                exitIsConfirmed = false;
+            }
+        }
+       );
+    }
+    if (exitIsConfirmed) 
+    {
+        ResetGame();
+        exitIsConfirmed = false;
+    }
+}
 class Button 
 {
     float x, y;
@@ -543,12 +601,13 @@ class Button
     float buttonWidth = 200, buttonHeight = 80;
     float R = 225, G = 225, B = 225;
     boolean action = false;
-    boolean active = false;
-    Button(float x, float y, String text) 
+    float textSize;
+    Button(float x, float y, String text, float textSize) 
     {
         this.x = x;
         this.y = y;
         this.text = text;
+        this.textSize=textSize;
     }
     public void createButton()
     {
@@ -558,7 +617,7 @@ class Button
         rectMode(CENTER);
         fill(R, G, B);
         //rect(x, y, buttonWidth, buttonHeight);
-        textSize(30);
+        textSize(textSize);
         textAlign(CENTER, CENTER);
         text(text, x, y);
         popMatrix();
@@ -711,7 +770,7 @@ class Item
             itemType = "MissileUp";
         }
         
-        if (randomNum >0) 
+        if (randomNum >=0.9f) 
         {
             itemImg = new Pic("UniqueSkill");
             itemType = "UniqueSkill";
@@ -790,21 +849,25 @@ class Player
     ArrayList<Missile> missile = new ArrayList<Missile>();
     Pic playerShipImg;
     int missileUpgrade = 0;
-    Player(float playerSize, String shipName) 
+    String controllerMode;
+    Player(float playerSize, String shipName, String controllerMode) 
     {
         this.playerSize = playerSize;
+        this.controllerMode=controllerMode;
         playerShipImg = new Pic(shipName);
     }
-    Player(float playerSize) 
+    Player(float playerSize, String controllerMode) 
     {
         this.playerSize = playerSize;
+        this.controllerMode=controllerMode;
         playerShipImg = new Pic("PlayerShip01");
     }
     public void Display()
     {
         imageMode(CENTER);
         playerShipImg.display(x, y, playerSize, playerSize);
-        KeyboardMove();
+        if(controllerMode.equals("Keyboard Mode")) KeyboardMove();
+        if(controllerMode.equals("Mouse Mode")) MouseMove();
         MissileLaunch();
     }
     public void KeyboardMove()
@@ -829,6 +892,15 @@ class Player
             x +=moveSpeed;
             keyCode = 0;
         }
+        if (x > width - playerSize / 2) x = width - playerSize / 2;
+        if (x < playerSize / 2) x = playerSize / 2;
+        if (y > height - playerSize / 2) y = height - playerSize / 2;
+        if (y < playerSize / 2) y = playerSize / 2;
+    }
+    public void MouseMove()
+    {
+        x=mouseX;
+        y=mouseY;
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;
@@ -862,7 +934,7 @@ class Player
         //println(missile.size());
     }
 }
-  public void settings() {  size(500, 900); }
+  public void settings() {  size(700, 900); }
   static public void main(String[] passedArgs) {
     String[] appletArgs = new String[] { "SpaceInvaders" };
     if (passedArgs != null) {

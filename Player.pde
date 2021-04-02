@@ -9,21 +9,25 @@ class Player
     ArrayList<Missile> missile = new ArrayList<Missile>();
     Pic playerShipImg;
     int missileUpgrade = 0;
-    Player(float playerSize, String shipName) 
+    String controllerMode;
+    Player(float playerSize, String shipName, String controllerMode) 
     {
         this.playerSize = playerSize;
+        this.controllerMode=controllerMode;
         playerShipImg = new Pic(shipName);
     }
-    Player(float playerSize) 
+    Player(float playerSize, String controllerMode) 
     {
         this.playerSize = playerSize;
+        this.controllerMode=controllerMode;
         playerShipImg = new Pic("PlayerShip01");
     }
     void Display()
     {
         imageMode(CENTER);
         playerShipImg.display(x, y, playerSize, playerSize);
-        KeyboardMove();
+        if(controllerMode.equals("Keyboard Mode")) KeyboardMove();
+        if(controllerMode.equals("Mouse Mode")) MouseMove();
         MissileLaunch();
     }
     void KeyboardMove()
@@ -48,6 +52,15 @@ class Player
             x +=moveSpeed;
             keyCode = 0;
         }
+        if (x > width - playerSize / 2) x = width - playerSize / 2;
+        if (x < playerSize / 2) x = playerSize / 2;
+        if (y > height - playerSize / 2) y = height - playerSize / 2;
+        if (y < playerSize / 2) y = playerSize / 2;
+    }
+    void MouseMove()
+    {
+        x=mouseX;
+        y=mouseY;
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;

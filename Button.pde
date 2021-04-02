@@ -5,12 +5,13 @@ class Button
     float buttonWidth = 200, buttonHeight = 80;
     float R = 225, G = 225, B = 225;
     boolean action = false;
-    boolean active = false;
-    Button(float x, float y, String text) 
+    float textSize;
+    Button(float x, float y, String text, float textSize) 
     {
         this.x = x;
         this.y = y;
         this.text = text;
+        this.textSize=textSize;
     }
     void createButton()
     {
@@ -20,7 +21,7 @@ class Button
         rectMode(CENTER);
         fill(R, G, B);
         //rect(x, y, buttonWidth, buttonHeight);
-        textSize(30);
+        textSize(textSize);
         textAlign(CENTER, CENTER);
         text(text, x, y);
         popMatrix();
