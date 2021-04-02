@@ -44,7 +44,7 @@ String userName = null;
 StringList userTopListName = new StringList();
 IntList userTopListScore = new IntList();
 boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
-boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime=true;
+boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
 String shipName, controllerMode = "Keyboard Mode";
 UiBooster booster;
 ListElement selectedElement;
@@ -55,24 +55,38 @@ Button exitButton;
 public void setup()
 {
     
-    if(isFirstTime){
-    WaitingDialog waitingDialog;
-    booster = new UiBooster();
-    waitingDialog = booster.showWaitingDialog("Starting", "Starting program");
-    //waitingDialog.setLargeMessage("Loading image...\nLoading animation...\nLoading background music...\nInitializing the game interface...");
-    delay(1500);
-    waitingDialog.close();
-    dialog = new UiBooster().showProgressDialog("Please wait", "Waiting", 0, 120);
-    dialog.setProgress(10);
-    dialog.setMessage("Starting program...");
-    GUIInit();
-    dialog.setProgress(70);
-    dialog.setMessage("Initializing game data...");
-    GameInit();
-    dialog.setProgress(120);
-    dialog.setMessage("Ready!");
-    delay(1000);
-    dialog.close();
+    if (isFirstTime) {
+        WaitingDialog waitingDialog;
+        booster = new UiBooster();
+        waitingDialog = booster.showWaitingDialog("Starting", "Starting program");
+        //waitingDialog.setLargeMessage("Loading image...\nLoading animation...\nLoading background music...\nInitializing the game interface...");
+        delay(1500);
+        waitingDialog.close();
+        dialog = new UiBooster().showProgressDialog("Please wait", "Waiting", 0, 100);
+        for (int i = 0;i <= 10;i++) 
+        {
+            dialog.setProgress(i);
+            dialog.setMessage(i + "%  Starting program...");
+            delay(10);
+        }
+        GUIInit();
+        for (int i = 70;i <= 90;i++) 
+        {
+            dialog.setProgress(i);
+            dialog.setMessage(i + "%  Initializing game data...");
+            delay(20);
+        }
+        GameInit();
+        for (int i = 90;i <= 99;i++) 
+        {
+            dialog.setProgress(i);
+            dialog.setMessage(i + "%  Almost done...");
+            delay(20);
+        }
+        dialog.setProgress(100);
+        dialog.setMessage("100%  Ready!");
+        delay(1000);
+        dialog.close();
     }
     else GameInit();
 }
@@ -81,7 +95,6 @@ public void draw()
     if (!button.get(0).action && !button.get(1).action && !button.get(2).action && !button.get(3).action && !button.get(4).action) GUIStartLoop();
     else if (button.get(0).action) //new game
         {
-        //mousePressed = false;
         //button.get(1).action = false;
         CreateUser();
         imageMode(CENTER);    
@@ -127,7 +140,7 @@ public void draw()
                .show();
             if (form.getByLabel("Choose your ship").getValue() == null) new UiBooster().showErrorDialog("You must choose a spaceship!", "ERROR");
         } while(form.getByLabel("Choose your ship").getValue() == null);
-        controllerMode = form.getByLabel("Controller Mode").asString();
+        controllerMode = form.getByLabel("Controller mode").asString();
         String value = form.getByLabel("Choose your ship").asString();
         String listValue = "";
         int count = 0;
@@ -188,7 +201,7 @@ public void draw()
         booster.showPictures("Help",new String[] {
             dataPath("PlayerShip01.png"),
                 dataPath("PlayerShip02.png"),
-                dataPath("PlayerShip03.png")});
+                dataPath("PlayerShip03.png")} );
     } else if (button.get(4).action) //Exit
         {
         mousePressed = false;
@@ -202,10 +215,20 @@ public void draw()
 }
 public void GUIInit()
 {
+    for (int i = 10;i <= 30;i++) 
+    {
+        dialog.setProgress(i);
+        dialog.setMessage(i + "%  Loading image and animation...");
+        delay(20);
+    }
     spaceAnimation = new Gif (this, "Space08.gif");
     spaceAnimation.loop();
-    dialog.setProgress(30);
-    dialog.setMessage("Loading image and animation...");
+    for (int i = 30;i <= 50;i++) 
+    {
+        dialog.setProgress(i);
+        dialog.setMessage(i + "%  Loading background music and special effects...");
+        delay(20);
+    }
     explosionBgm = new SoundFile(this, "Explosion.mp3");
     explosionBgm.amp(0.5f);
     spaceBgm = new SoundFile(this, "Spacebgm.mp3");
@@ -213,8 +236,12 @@ public void GUIInit()
     spaceBgm.loop();
     itemBgm = new SoundFile(this, "Item.mp3");
     itemBgm.amp(0.5f);
-    dialog.setProgress(50);
-    dialog.setMessage("Initializing the game interface...");
+    for (int i = 50;i <= 70;i++) 
+    {
+        dialog.setProgress(i);
+        dialog.setMessage(i + "%  Initializing the game interface...");
+        delay(20);
+    }
     button = new ArrayList<Button>();
     button.add(new Button(width / 2, height * 2.7f / 8, "New Game",30));
     button.add(new Button(width / 2, height * 3.45f / 8, "Personalized Settings",30));
@@ -289,7 +316,7 @@ public void DisplayAndCheckItem()
             }
             else if (item.get(i).itemType == "MissileUp")
             {
-                player.missileUpgrade +=40;
+                player.missileUpgrade +=50;
                 itemBgm.play();
             }
             else if (item.get(i).itemType == "UniqueSkill")
@@ -492,7 +519,7 @@ public void ResetGame()
     button.get(2).action = false;
     button.get(3).action = false;
     button.get(4).action = false;
-    isFirstTime=false;
+    isFirstTime = false;
     mousePressed = false;
     setup();
 }
@@ -521,14 +548,15 @@ public void CreateUser()
 {
     while((userTopListName.hasValue(userName) || userName == null) && initName && !nameIsConfirmed)
         {
+        mousePressed = false;
         userName = new UiBooster().showTextInputDialog("Please enter your name:");
         if (userName == null || userName.equals("")) new UiBooster().showErrorDialog("The name is not allowed to be empty!", "ERROR");
         if (userTopListName.hasValue(userName) && !userName.equals(""))
         {
             booster = new UiBooster();
             booster.showConfirmDialog(
-                "If you are the owner of this name, please click Yes and log in to the game with this name, otherwise please click No and enter your new name!", 
-                "Detected the same name!", 
+                "Detected the same name! If you are the owner of this name, please click Yes and log in to\nthe game with this name, otherwise please click No and enter your new name!", 
+                "Info - Detected the same name!", 
                 new Runnable() {
                 public void run() {
                     nameIsConfirmed = true;
@@ -909,7 +937,7 @@ class Player
     public void MissileLaunch()
     {
         time = millis() - lastTime;
-        if (missileUpgrade > 400) missileUpgrade = 400;
+        if (missileUpgrade > 500) missileUpgrade = 500;
         if (time > 700 - missileUpgrade) {
             lastTime = millis();
             missile.add(new Missile(x, y, "PLAYER"));

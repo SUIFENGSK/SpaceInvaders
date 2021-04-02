@@ -69,7 +69,7 @@ class Player
     void MissileLaunch()
     {
         time = millis() - lastTime;
-        if (missileUpgrade > 400) missileUpgrade = 400;
+        if (missileUpgrade > 500) missileUpgrade = 500;
         if (time > 700 - missileUpgrade) {
             lastTime = millis();
             missile.add(new Missile(x, y, "PLAYER"));
