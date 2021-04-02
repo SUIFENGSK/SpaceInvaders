@@ -111,7 +111,7 @@ public void draw()
     do {
             form = new UiBooster()
                .createForm("Personalized settings")
-               .addSelection("Controller Mode", "Keyboard Mode", "Mouse Mode")
+               .addSelection("Controller mode", "Keyboard Mode", "Mouse Mode")
                .addList("Choose your ship", 
                 new ListElement("Ship 1 (Default ship)", "Green and strong", dataPath("PlayerShip01.png")), 
                 new ListElement("Ship 2", "Green and strong", dataPath("PlayerShip02.png")), 

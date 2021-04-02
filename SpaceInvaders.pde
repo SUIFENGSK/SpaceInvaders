@@ -103,7 +103,7 @@ void draw()
                .show();
             if (form.getByLabel("Choose your ship").getValue() == null) new UiBooster().showErrorDialog("You must choose a spaceship!", "ERROR");
         } while(form.getByLabel("Choose your ship").getValue() == null);
-        controllerMode = form.getByLabel("Controller Mode").asString();
+        controllerMode = form.getByLabel("Controller mode").asString();
         String value = form.getByLabel("Choose your ship").asString();
         String listValue = "";
         int count = 0;
