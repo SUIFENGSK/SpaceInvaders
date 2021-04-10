@@ -30,16 +30,14 @@ public class SpaceInvaders extends PApplet {
 
 
 Gif spaceAnimation;
-SoundFile explosionBgm, spaceBgm, itemBgm;
+SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm;
 Player player;
 ArrayList < Enemy > enemy;
 ArrayList < ExplosionGif > explosionGif;
 ArrayList < Button > button;
 ArrayList < Item > item;
-int initEnemy;
+int initEnemy,remainingLife,score,degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
 float enemySize = 40, playerSize = 70;
-int remainingLife;
-int score;
 String userName = null;
 StringList userTopListName = new StringList();
 IntList userTopListScore = new IntList();
@@ -48,7 +46,6 @@ boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = tru
 String shipName, controllerMode = "Keyboard Mode";
 UiBooster booster;
 ListElement selectedElement;
-int degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
 FilledForm form;
 ProgressDialog dialog;
 Button exitButton;
@@ -126,10 +123,10 @@ public void draw()
                .createForm("Personalized settings")
                .addSelection("Controller mode", "Keyboard Mode", "Mouse Mode")
                .addList("Choose your ship", 
-                new ListElement("Ship 1 (Default ship)", "Green and strong", dataPath("PlayerShip01.png")), 
-                new ListElement("Ship 2", "Green and strong", dataPath("PlayerShip02.png")), 
-                new ListElement("Ship 3", "Green and strong", dataPath("PlayerShip03.png")), 
-                new ListElement("Ship 4", "Green and strong", dataPath("PlayerShip04.png")))
+                new ListElement("Ship 1 (Default ship)", "This is a standard spaceship.", dataPath("PlayerShip01.png")), 
+                new ListElement("Ship 2", "This is a spaceship designed in red and blue.", dataPath("PlayerShip02.png")), 
+                new ListElement("Ship 3", "This is a spaceship designed in blue and white.", dataPath("PlayerShip03.png")), 
+                new ListElement("Ship 4", "This is a uniquely designed spaceship.\nIt has a cool shape design.", dataPath("PlayerShip04.png")))
                .addSlider("Number of enemies (Default number of enemies is 50)", 50, 500, 50, 50, 9)
                .addSlider("Difficulty settings (Default degree of difficulty is 5)", 1, 10, degreeOfDifficulty, 3, 1)
                .andWindow()
@@ -199,9 +196,7 @@ public void draw()
         button.get(3).action = false;
         booster = new UiBooster();
         booster.showPictures("Help",new String[] {
-            dataPath("PlayerShip01.png"),
-                dataPath("PlayerShip02.png"),
-                dataPath("PlayerShip03.png")} );
+            dataPath("Help01.jpg")});
     } else if (button.get(4).action) //Exit
         {
         mousePressed = false;
@@ -236,6 +231,8 @@ public void GUIInit()
     spaceBgm.loop();
     itemBgm = new SoundFile(this, "Item.mp3");
     itemBgm.amp(0.5f);
+    buttonBgm = new SoundFile(this, "ButtonSelect.mp3");
+    buttonBgm.amp(1);
     for (int i = 50;i <= 70;i++) 
     {
         dialog.setProgress(i);
@@ -628,14 +625,14 @@ class Button
     String text;
     float buttonWidth = 200, buttonHeight = 80;
     float R = 225, G = 225, B = 225;
-    boolean action = false;
+    boolean action = false, buttonBgmControl = true;
     float textSize;
     Button(float x, float y, String text, float textSize) 
     {
         this.x = x;
         this.y = y;
         this.text = text;
-        this.textSize=textSize;
+        this.textSize = textSize;
     }
     public void createButton()
     {
@@ -654,24 +651,29 @@ class Button
     }
     public void render() 
     {
+        
         if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) {
             R = 138;
             G = 217;
             B = 78;
+            if (buttonBgmControl) 
+            {
+                buttonBgm.play();
+                buttonBgmControl = false;
+            }
         } else {
             R = 225;
             G = 225;
             B = 225;
+            buttonBgmControl = true;
         }
     }
     public void checkButton() 
     {
-        if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) {
-           if (mousePressed && action == false)
-            {
-                action = true;
-        } else
-                action = false;
+        if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) 
+        {
+            if (mousePressed && action == false)  action = true;
+            else  action = false;
         }
     }
     public void buttonAction() 
