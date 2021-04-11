@@ -286,7 +286,7 @@ public void GUIStartLoop()
     textMode(MODEL);
     text("Space Invaders", width / 2, height * 1.5f / 8);
     textSize(20);
-    text("Developed by Shuokai", width / 2, height * 7 / 8);
+    text("Developed by Shuokai Ma", width / 2, height * 7 / 8);
     for (int i = 0; i < button.size(); i++) {
         button.get(i).createButton();
     }

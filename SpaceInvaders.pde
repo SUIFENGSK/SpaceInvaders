@@ -262,7 +262,7 @@ void GUIStartLoop()
     textMode(MODEL);
     text("Space Invaders", width / 2, height * 1.5 / 8);
     textSize(20);
-    text("Developed by Shuokai", width / 2, height * 7 / 8);
+    text("Developed by Shuokai Ma", width / 2, height * 7 / 8);
     for (int i = 0; i < button.size(); i++) {
         button.get(i).createButton();
     }
@@ -468,7 +468,7 @@ void CalculateAndDisplayTheFinalResult()
         text(userTopListScore.get(i), width / 2 + 60, height * (4.25 + (i + 1) * 0.5) / 8);
     }
     textSize(20);
-    text("Click the mouse to restart the game", width / 2, height * 7 / 8);
+    text("Click the left mouse button to restart the game", width / 2, height * 7 / 8);
 }
 void DisplayExplosion()
 {
