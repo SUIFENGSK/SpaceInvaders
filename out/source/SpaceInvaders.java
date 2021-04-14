@@ -29,8 +29,8 @@ public class SpaceInvaders extends PApplet {
 
 
 
-Gif spaceAnimation;
-SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm;
+Gif spaceAnimation; //Background animation
+SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm; //Sound effects and background music
 Player player;
 ArrayList < Enemy > enemy;
 ArrayList < ExplosionGif > explosionGif;
@@ -55,33 +55,32 @@ public void setup()
     if (isFirstTime) {
         WaitingDialog waitingDialog;
         booster = new UiBooster();
-        waitingDialog = booster.showWaitingDialog("Starting", "Starting program");
-        //waitingDialog.setLargeMessage("Loading image...\nLoading animation...\nLoading background music...\nInitializing the game interface...");
+        waitingDialog = booster.showWaitingDialog("Starting", "Starting program");  //GUI loading message
         delay(1500);
         waitingDialog.close();
-        dialog = new UiBooster().showProgressDialog("Please wait", "Waiting", 0, 100);
+        dialog = new UiBooster().showProgressDialog("Please wait", "Waiting", 0, 100); //GUI loading message
         for (int i = 0;i <= 10;i++) 
         {
             dialog.setProgress(i);
-            dialog.setMessage(i + "%  Starting program...");
+            dialog.setMessage(i + "%  Starting program..."); //GUI loading message
             delay(10);
         }
-        GUIInit();
+        GUIInit(); //GUI initialization
         for (int i = 70;i <= 90;i++) 
         {
             dialog.setProgress(i);
-            dialog.setMessage(i + "%  Initializing game data...");
+            dialog.setMessage(i + "%  Initializing game data..."); //GUI loading message
             delay(20);
         }
-        GameInit();
+        GameInit(); //Game initialization
         for (int i = 90;i <= 99;i++) 
         {
             dialog.setProgress(i);
-            dialog.setMessage(i + "%  Almost done...");
+            dialog.setMessage(i + "%  Almost done..."); //GUI loading message
             delay(20);
         }
         dialog.setProgress(100);
-        dialog.setMessage("100%  Ready!");
+        dialog.setMessage("100%  Ready!"); //GUI loading message
         delay(1000);
         dialog.close();
     }
@@ -89,15 +88,14 @@ public void setup()
 }
 public void draw()
 {
-    if (!button.get(0).action && !button.get(1).action && !button.get(2).action && !button.get(3).action && !button.get(4).action) GUIStartLoop();
+    if (!button.get(0).action && !button.get(1).action && !button.get(2).action && !button.get(3).action && !button.get(4).action) GUIStartLoop(); //Main interface, animation and background music loop
     else if (button.get(0).action) //new game
         {
-        //button.get(1).action = false;
-        CreateUser();
+        CreateUser(); //User judgment and creation
         imageMode(CENTER);    
         frameRate(60);
-        image(spaceAnimation, width / 2, height / 2, width, height); 
-        if (remainingLife > 0 && enemy.size()>0) {        
+        image(spaceAnimation, width / 2, height / 2, width, height); //Gif loop
+        if (remainingLife > 0 && enemy.size()>0) { //The main engine of the game starts       
             player.Display();
             DisplayAndCheckItem();
             EnemyMove();
@@ -107,43 +105,44 @@ public void draw()
             CheckEnemyIsAlive();
             DisplayInfo();
             ExitGameButtonListener();
-        } else {
+        } else {//The game ends and the result of the game is displayed
             spaceBgm.amp(0.2f);
             CalculateAndDisplayTheFinalResult();
         }
     } else if (button.get(1).action) //Personalized Settings
         {
-        mousePressed = false;
-        button.get(1).action = false;
+        mousePressed = false; //Mouse state reset
+        button.get(1).action = false; //Button state reset
         personalizedSettings = true;
         shipIsChanged = true;
-        booster = new UiBooster();
+        booster = new UiBooster(); //Personalized Settings' form
     do {
             form = new UiBooster()
                .createForm("Personalized settings")
-               .addSelection("Controller mode", "Keyboard Mode", "Mouse Mode")
+               .addSelection("Controller mode", "Keyboard Mode", "Mouse Mode") //Controller mode selection
                .addList("Choose your ship", 
                 new ListElement("Ship 1 (Default ship)", "This is a standard spaceship.", dataPath("PlayerShip01.png")), 
                 new ListElement("Ship 2", "This is a spaceship designed in red and blue.", dataPath("PlayerShip02.png")), 
                 new ListElement("Ship 3", "This is a spaceship designed in blue and white.", dataPath("PlayerShip03.png")), 
-                new ListElement("Ship 4", "This is a uniquely designed spaceship.\nIt has a cool shape design.", dataPath("PlayerShip04.png")))
-               .addSlider("Number of enemies (Default number of enemies is 50)", 50, 500, 50, 50, 9)
-               .addSlider("Difficulty settings (Default degree of difficulty is 5)", 1, 10, degreeOfDifficulty, 3, 1)
+                new ListElement("Ship 4", "This is a uniquely designed spaceship.\nIt has a cool shape design.", dataPath("PlayerShip04.png"))) //Spaceship selection
+               .addSlider("Number of enemies (Default number of enemies is 50)", 50, 500, 50, 50, 9) //Enemy number selection
+               .addSlider("Difficulty settings (Default degree of difficulty is 5)", 1, 10, degreeOfDifficulty, 3, 1) //Difficulty factor selection
                .andWindow()
-               .setSize(500, 725)
+               .setSize(500, 725) //Dialog size
                .setUndecorated()
-               .setPosition(displayWidth / 2 - 500 / 2,displayHeight / 2 - 725 / 2)
+               .setPosition(displayWidth / 2 - 500 / 2,displayHeight / 2 - 725 / 2) //Dialog position
                .save()
                .show();
-            if (form.getByLabel("Choose your ship").getValue() == null) new UiBooster().showErrorDialog("You must choose a spaceship!", "ERROR");
-        } while(form.getByLabel("Choose your ship").getValue() == null);
+            if (form.getByLabel("Choose your ship").getValue() == null) new UiBooster().showErrorDialog("You must choose a spaceship!", "ERROR"); //Show error message
+        } while(form.getByLabel("Choose your ship").getValue() == null); //User ust choose a spaceship
+        //Controller mode selection
         controllerMode = form.getByLabel("Controller mode").asString();
-        String value = form.getByLabel("Choose your ship").asString();
+        //Spaceship selection
+        String value = form.getByLabel("Choose your ship").asString(); //Get spaceship value from personalized Settings' form
         String listValue = "";
         int count = 0;
         boolean record = false;
-        //println(value);
-        for (int i = 0; i < value.length(); i++)
+        for (int i = 0; i < value.length(); i++) //Select the value within the first single quote
         {
             if (value.charAt(i) == PApplet.parseChar(39)) {
                 count++;
@@ -155,26 +154,24 @@ public void draw()
                 listValue +=value.charAt(i + 1);
             }
         }
-        //println(listValue);
         if (listValue.equals("Ship 1 (Default ship)")) shipName = "PlayerShip01";
         if (listValue.equals("Ship 2")) shipName = "PlayerShip02";
         if (listValue.equals("Ship 3")) shipName = "PlayerShip03";
         if (listValue.equals("Ship 4")) shipName = "PlayerShip04";
-        player = new Player(playerSize, shipName,controllerMode);
-        initEnemy = form.getByLabel("Number of enemies (Default number of enemies is 50)").asInt();
-        degreeOfDifficulty = form.getByLabel("Difficulty settings (Default degree of difficulty is 5)").asInt();
-        enemy.clear();
-        for (int i = 0; i < initEnemy; i++) {
+        player = new Player(playerSize, shipName,controllerMode); //Reinitialize the user's attributes
+        initEnemy = form.getByLabel("Number of enemies (Default number of enemies is 50)").asInt(); //Get enemy number value from personalized Settings' form
+        degreeOfDifficulty = form.getByLabel("Difficulty settings (Default degree of difficulty is 5)").asInt(); //Get difficulty factor value from personalized Settings' form
+        enemy.clear(); //Clear enemy attributes that have been initialized
+        for (int i = 0; i < initEnemy; i++) { //Reinitialize enemy attributes
             enemy.add(new Enemy(0 - i * 70, enemySize));
             enemy.get(i).xSpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
             enemy.get(i).ySpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
         }
-        enemy.get(0).yMove = true;
-        //println(degreeOfDifficulty);
+        enemy.get(0).yMove = true; //Set the movement state of the first enemy to true
     } else if (button.get(2).action) //Leaderboard
         {
-        mousePressed = false;
-        button.get(2).action = false;
+        mousePressed = false; //Mouse state reset
+        button.get(2).action = false; //Button state reset
         CalculateResult();
         int displayNum;
         String textData = "Leaderboard - TOP 5\n\n";
@@ -192,18 +189,18 @@ public void draw()
         
     } else if (button.get(3).action) //Help
         {
-        mousePressed = false;
-        button.get(3).action = false;
+        mousePressed = false; //Mouse state reset
+        button.get(3).action = false; //Button state reset
         booster = new UiBooster();
         booster.showPictures("Help",new String[] {
             dataPath("Help01.jpg")});
     } else if (button.get(4).action) //Exit
         {
-        mousePressed = false;
-        button.get(4).action = false;
+        mousePressed = false; //Mouse state reset
+        button.get(4).action = false; //Button state reset
         exit();
     }
-    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //init Game
+    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //Game over and reinitialize Game
     {
         ResetGame();        
     }
@@ -213,18 +210,18 @@ public void GUIInit()
     for (int i = 10;i <= 30;i++) 
     {
         dialog.setProgress(i);
-        dialog.setMessage(i + "%  Loading image and animation...");
+        dialog.setMessage(i + "%  Loading image and animation..."); //GUI loading message
         delay(20);
     }
-    spaceAnimation = new Gif (this, "Space08.gif");
+    spaceAnimation = new Gif (this, "Space08.gif"); //Loading background animation
     spaceAnimation.loop();
     for (int i = 30;i <= 50;i++) 
     {
         dialog.setProgress(i);
-        dialog.setMessage(i + "%  Loading background music and special effects...");
+        dialog.setMessage(i + "%  Loading background music and special effects..."); //GUI loading message
         delay(20);
     }
-    explosionBgm = new SoundFile(this, "Explosion.mp3");
+    explosionBgm = new SoundFile(this, "Explosion.mp3"); //Loading sound effects and background music
     explosionBgm.amp(0.5f);
     spaceBgm = new SoundFile(this, "Spacebgm.mp3");
     spaceBgm.amp(1);
@@ -236,10 +233,10 @@ public void GUIInit()
     for (int i = 50;i <= 70;i++) 
     {
         dialog.setProgress(i);
-        dialog.setMessage(i + "%  Initializing the game interface...");
+        dialog.setMessage(i + "%  Initializing the game interface..."); //GUI loading message
         delay(20);
     }
-    button = new ArrayList<Button>();
+    button = new ArrayList<Button>(); //Create button
     button.add(new Button(width / 2, height * 2.7f / 8, "New Game",30));
     button.add(new Button(width / 2, height * 3.45f / 8, "Personalized Settings",30));
     button.add(new Button(width / 2, height * 4.2f / 8, "Leaderboard",30));
@@ -250,35 +247,35 @@ public void GUIInit()
 public void GameInit()
 {
     if (initImport) {
-        ImportData();
+        ImportData(); //Import user data (only when starting the program at the very beginning)
         initImport = false;
     }
-    remainingLife = 10;
-    score = 0;
-    if (!personalizedSettings) 
+    remainingLife = 10; //Initial total number of lives
+    score = 0; //Initial total score
+    if (!personalizedSettings) //If the user does not personalize the game, the game uses the default settings to initialize
     {
         player = new Player(playerSize,controllerMode);
-        initEnemy = 50;
+        initEnemy = 50; //Initial enemy number
     }
     else player = new Player(playerSize,shipName,controllerMode);
-    enemy = new ArrayList<Enemy>();
-    item = new ArrayList<Item>();
+    enemy = new ArrayList<Enemy>(); //Initialize enemy
+    item = new ArrayList<Item>(); //Initialize item
     explosionGif = new ArrayList < ExplosionGif > ();
     for (int i = 0; i < initEnemy; i++) {
-        enemy.add(new Enemy(0 - i * 70, enemySize));
+        enemy.add(new Enemy(0 - i * 70, enemySize)); // Add enemy spaceship
         if (personalizedSettings)
         {
             enemy.get(i).xSpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
             enemy.get(i).ySpeed = 3 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.2f;
         }
     }
-    enemy.get(0).yMove = true;
+    enemy.get(0).yMove = true; //Set the movement state of the first enemy to true
 }
 public void GUIStartLoop()
 {
-    spaceBgm.amp(1);
+    spaceBgm.amp(1); //Background music volume setting
     imageMode(CENTER);  
-    image(spaceAnimation, width / 2, height / 2, width, height);
+    image(spaceAnimation, width / 2, height / 2, width, height); //Gif loop
     fill(255);
     stroke(255);
     textAlign(CENTER);
@@ -288,35 +285,34 @@ public void GUIStartLoop()
     textSize(20);
     text("Developed by Shuokai Ma", width / 2, height * 7 / 8);
     for (int i = 0; i < button.size(); i++) {
-        button.get(i).createButton();
+        button.get(i).createButton(); //Show buttons
     }
 }
 public void DisplayAndCheckItem()
 {
-    //println(player.missileUpgrade);
-    if (random(0, 1)<0.003f - (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005f) 
+    if (random(0, 1)<0.003f - (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005f) //Probability of the item depends on the degree of difficulty
     {
         item.add(new Item(random(0,1)));
     }
     for (int i = 0;i < item.size();i++)
     {
-        item.get(i).Move();
-        if (item.get(i).y>height + item.get(i).itemSize) item.remove(i);
+        item.get(i).Move(); //Items move
+        if (item.get(i).y>height + item.get(i).itemSize) item.remove(i); //If the item is not in the game interface, remove the item
         if (item.size() == 0) break;
         if (item.get(i).x>player.x - playerSize / 2 && item.get(i).x<player.x + playerSize / 2 &&
-            item.get(i).y>player.y - playerSize / 2 && item.get(i).y<player.y + playerSize / 2)
+            item.get(i).y>player.y - playerSize / 2 && item.get(i).y<player.y + playerSize / 2) //Determine whether the user gets the item
             {
-            if (item.get(i).itemType == "LifeUp") 
+            if (item.get(i).itemType == "LifeUp") //Item type 1 (add an extra life)
             {
                 remainingLife++;
                 itemBgm.play();
             }
-            else if (item.get(i).itemType == "MissileUp")
+            else if (item.get(i).itemType == "MissileUp") //Item type 2
             {
                 player.missileUpgrade +=50;
                 itemBgm.play();
             }
-            else if (item.get(i).itemType == "UniqueSkill")
+            else if (item.get(i).itemType == "UniqueSkill") //Item type 3
             {
                 itemBgm.play();
                 for (int j = enemy.size() - 1;j >= 0;j--)
@@ -371,7 +367,7 @@ public void PlayerMissileJudgment()
         for (int j = 0; j < enemy.size(); j++)
         {
             if (player.missile.get(i).x>enemy.get(j).x - enemySize / 2 && player.missile.get(i).x<enemy.get(j).x + enemySize / 2 &&
-                player.missile.get(i).y>enemy.get(j).y - enemySize / 2 && player.missile.get(i).y<enemy.get(j).y + enemySize / 2)
+                player.missile.get(i).y>enemy.get(j).y - enemySize / 2 && player.missile.get(i).y<enemy.get(j).y + enemySize / 2) //Boundary judgment
             {
                 explosionBgm.play();
                 explosionGif.add(new ExplosionGif (player.missile.get(i).x, player.missile.get(i).y, this));   
@@ -492,7 +488,7 @@ public void CalculateAndDisplayTheFinalResult()
         text(userTopListScore.get(i), width / 2 + 60, height * (4.25f + (i + 1) * 0.5f) / 8);
     }
     textSize(20);
-    text("Click the mouse to restart the game", width / 2, height * 7 / 8);
+    text("Click the left mouse button to restart the game", width / 2, height * 7 / 8);
 }
 public void DisplayExplosion()
 {

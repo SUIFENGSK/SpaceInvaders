@@ -1,14 +1,14 @@
 class Player
 {
-    float x = width / 2;
+    float x = width / 2; //Player's initial coordinates
     float y = height * 7 / 8;
-    float moveSpeed = 10;
+    float moveSpeed = 10; //Player movement speed
     float playerSize;
     int time = 0;
     int lastTime = 0;
     ArrayList<Missile> missile = new ArrayList<Missile>();
-    Pic playerShipImg;
-    int missileUpgrade = 0;
+    Pic playerShipImg; //Picture of the player's spaceship
+    int missileUpgrade = 0; //The missile status of the player's spaceship
     String controllerMode;
     Player(float playerSize, String shipName, String controllerMode) 
     {
@@ -25,13 +25,14 @@ class Player
     void Display()
     {
         imageMode(CENTER);
-        playerShipImg.display(x, y, playerSize, playerSize);
-        if(controllerMode.equals("Keyboard Mode")) KeyboardMove();
-        if(controllerMode.equals("Mouse Mode")) MouseMove();
-        MissileLaunch();
+        playerShipImg.display(x, y, playerSize, playerSize); //Display player's spaceship
+        if(controllerMode.equals("Keyboard Mode")) KeyboardMove(); //Keyboard mode
+        if(controllerMode.equals("Mouse Mode")) MouseMove(); //Mouse mode
+        MissileLaunch(); //The player fires a missile
     }
     void KeyboardMove()
     {
+        //Direction judgment
         if (keyPressed && keyCode == UP) 
         {
             y -=moveSpeed;
@@ -52,6 +53,7 @@ class Player
             x +=moveSpeed;
             keyCode = 0;
         }
+        //Boundary judgment
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;
@@ -61,6 +63,7 @@ class Player
     {
         x=mouseX;
         y=mouseY;
+        //Boundary judgment
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;
@@ -68,29 +71,22 @@ class Player
     }
     void MissileLaunch()
     {
+        //Launch a missile every 700ms by default. With the upgrade of the player’s missiles, the missile’s launch speed can be as fast as 200ms per missile.
         time = millis() - lastTime;
         if (missileUpgrade > 500) missileUpgrade = 500;
         if (time > 700 - missileUpgrade) {
             lastTime = millis();
-            missile.add(new Missile(x, y, "PLAYER"));
+            missile.add(new Missile(x, y, "PLAYER")); //Add player's missile
         }
-        /*
-        if (keyPressed && key==' ') 
-    {
-        key=0;
-        missile.add(new Missile(x, y, "PLAYER"));
-    }
-        */
         if (missile.size()>0) {
             for (int i = 0; i < missile.size(); i++) 
             {
-                missile.get(i).Launch();
+                missile.get(i).Launch();  //Launch missile
                 if (missile.get(i).y<0) 
                 {
-                    missile.remove(i);
+                    missile.remove(i); //If the missile coordinates are beyond the game interface, remove the missile
                 }
             }
         }
-        //println(missile.size());
     }
 }
