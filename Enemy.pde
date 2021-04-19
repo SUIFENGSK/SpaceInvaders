@@ -1,26 +1,27 @@
 class Enemy
 {
-    float enemySize;
-    float x, y;
-    float xSpeed = 3, ySpeed = 3; //Initialization speed of the enemy spaceship
-    int time = 0;
-    int lastTime = 0;
-    boolean xyDirection, yMove = false, isDestroyed = false;
-    ArrayList<Missile> missile = new ArrayList<Missile>();
-    Pic enemyShipImg = new Pic("EnemyShip"); //Read and import enemy spaceship's picture
-    Enemy(float y, float enemySize)
+    private float enemySize;
+    public float x, y;
+    private float xSpeed = 3, ySpeed = 3; //Initialization speed of the enemy spaceship
+    private int time = 0;
+    private int lastTime = 0;
+    private boolean xyDirection;
+    public boolean yMove = false, isDestroyed = false;
+    public ArrayList<Missile> missile = new ArrayList<Missile>();
+    private Pic enemyShipImg = new Pic("EnemyShip"); //Read and import enemy spaceship's picture
+    public Enemy(float y, float enemySize)
     {
         x = random(enemySize / 2 + 10, width - enemySize / 2 - 10); //Initialize the x-coordinate of the item randomly
         this.y = y; //Import the y-coordinate of the enemy spaceship
         this.enemySize = enemySize; //Import the size of the enemy spaceship
     }
-    void Move()
+    public void Move()
     {
         if (!isDestroyed) //If the enemy spaceship is not destroyed, the enemy spaceship can move
         {
             time = millis() - lastTime;
             imageMode(CENTER);
-            enemyShipImg.display(x,y,enemySize,enemySize); //Display enemy spaceship's picture
+            enemyShipImg.Display(x,y,enemySize,enemySize); //Display enemy spaceship's picture
             if (time > 500) {//The enemy spaceship changes direction every 500ms
                 lastTime = millis();
                 //change y-direction. The probability of the enemy’s y-direction change depends on the degree of difficulty
@@ -47,14 +48,14 @@ class Enemy
         }
         MissileLaunch();        
     }
-    void MissileAdd()
+    private void MissileAdd()
     {
         if (!isDestroyed && random(0, 1)<0.01 + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.001) //The firing frequency of enemy missiles depends on the difficulty of the game
         {
             missile.add(new Missile(x, y, "ENEMY")); //Add enemy's missile
         }        
     }
-    void MissileLaunch()
+    private void MissileLaunch()
     {
         if (missile.size()>0) {
             for (int i = 0; i < missile.size(); i++) 

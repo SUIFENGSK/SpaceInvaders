@@ -5,27 +5,27 @@ import uibooster.model.formelements.*;
 import uibooster.utils.*;
 import gifAnimation.*;
 import processing.sound.*;
-Gif spaceAnimation; //Background animation
-SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm; //Sound effects and background music
-Player player;
-ArrayList < Enemy > enemy;
-ArrayList < ExplosionGif > explosionGif;
-ArrayList < Button > button;
-ArrayList < Item > item;
-int initEnemy,remainingLife,score,degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
-float enemySize = 40, playerSize = 70;
-String userName = null;
-StringList userTopListName = new StringList();
-IntList userTopListScore = new IntList();
-boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
-boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
-String shipName, controllerMode = "Keyboard Mode";
-UiBooster booster;
-ListElement selectedElement;
-FilledForm form;
-ProgressDialog dialog;
-Button exitButton;
-void setup()
+private Gif spaceAnimation; //Background animation
+private SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm; //Sound effects and background music
+private Player player;
+private ArrayList < Enemy > enemy;
+private ArrayList < ExplosionGif > explosionGif;
+private ArrayList < Button > button;
+private ArrayList < Item > item;
+private int initEnemy,remainingLife,score,degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
+private float enemySize = 40, playerSize = 70;
+private String userName = null;
+private StringList userTopListName = new StringList();
+private IntList userTopListScore = new IntList();
+private boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
+private boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
+private String shipName, controllerMode = "Keyboard Mode";
+private UiBooster booster;
+private ListElement selectedElement;
+private FilledForm form;
+private ProgressDialog dialog;
+private Button exitButton;
+public void setup()
 {
     size(700, 900);
     if (isFirstTime) {
@@ -62,7 +62,7 @@ void setup()
     }
     else GameInit();
 }
-void draw()
+public void draw()
 {
     if (!button.get(0).action && !button.get(1).action && !button.get(2).action && !button.get(3).action && !button.get(4).action) GUIStartLoop(); //Main interface, animation and background music loop
     else if (button.get(0).action) //new game
@@ -181,7 +181,7 @@ void draw()
         ResetGame();        
     }
 }
-void GUIInit()
+private void GUIInit()
 {
     for (int i = 10;i <= 30;i++) 
     {
@@ -220,7 +220,7 @@ void GUIInit()
     button.add(new Button(width / 2, height * 5.7 / 8, "Exit",30));
     exitButton = new Button(30,20,"Exit",16);
 }
-void GameInit()
+private void GameInit()
 {
     if (initImport) {
         ImportData(); //Import user data (only when starting the program at the very beginning)
@@ -247,7 +247,7 @@ void GameInit()
     }
     enemy.get(0).yMove = true; //Set the movement state of the first enemy to true
 }
-void GUIStartLoop()
+private void GUIStartLoop()
 {
     spaceBgm.amp(1); //Background music volume setting
     imageMode(CENTER);  
@@ -261,10 +261,10 @@ void GUIStartLoop()
     textSize(20);
     text("Developed by Shuokai Ma", width / 2, height * 7 / 8);
     for (int i = 0; i < button.size(); i++) {
-        button.get(i).createButton(); //Show buttons
+        button.get(i).CreateButton(); //Show buttons
     }
 }
-void DisplayAndCheckItem()
+private void DisplayAndCheckItem()
 {
     if (random(0, 1)<0.003 - (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005) //Probability of the item depends on the degree of difficulty
     {
@@ -306,7 +306,7 @@ void DisplayAndCheckItem()
         }        
     } 
 }
-void EnemyMove()
+private void EnemyMove()
 {
     if (enemy.size() == 0) return; //If there are no more enemies, exit the function
     else enemy.get(0).yMove = true; //Else set the movement state of the first enemy to true
@@ -328,14 +328,14 @@ void EnemyMove()
         }
     }
 }
-void CheckEnemyIsAlive()
+private void CheckEnemyIsAlive()
 {
     for (int i = 0;i < enemy.size();i++)
     {
         if (enemy.get(i).isDestroyed && enemy.get(i).missile.size() == 0) enemy.remove(i); //If the enemy is destroyed and its missile is no longer in the game interface, remove the enemy
     }
 }
-void PlayerMissileJudgment()
+private void PlayerMissileJudgment()
 {
     for (int i = 0; i < player.missile.size(); i++)
         {
@@ -356,7 +356,7 @@ void PlayerMissileJudgment()
     }
     DisplayExplosion(); //Play explosion animation effect
 }
-void EnemyMissileJudgment()
+private void EnemyMissileJudgment()
 {
     for (int i = 0; i < enemy.size(); i++)
         {
@@ -377,7 +377,7 @@ void EnemyMissileJudgment()
     }
     DisplayExplosion();
 }
-void CollideWithTheEnemy()
+private void CollideWithTheEnemy()
 {
     for (int i = 0; i < enemy.size(); i++)
         {
@@ -400,7 +400,7 @@ void CollideWithTheEnemy()
     }
     DisplayExplosion();
 }
-void DisplayInfo()
+private void DisplayInfo()
 {
     //Display real-time data of the game
     fill(255);
@@ -415,7 +415,7 @@ void DisplayInfo()
     text("Enemy:", width * 6 / 8, 80);
     text(enemy.size(), width * 7 / 8, 80);
 }
-void CalculateAndDisplayTheFinalResult()
+private void CalculateAndDisplayTheFinalResult()
 {
     //If it is a new game, it is determined whether the user already exists in the database, 
     //and if it exists and the user has broken his record, the user's highest score is updated. 
@@ -469,7 +469,7 @@ void CalculateAndDisplayTheFinalResult()
     textSize(20);
     text("Click the left mouse button to restart the game", width / 2, height * 7 / 8);
 }
-void DisplayExplosion()
+private void DisplayExplosion()
 {
     for (int i = 0; i < explosionGif.size(); i++)
         {
@@ -480,7 +480,7 @@ void DisplayExplosion()
         }
     }
 }
-void ResetGame()
+private void ResetGame()
 {
     //Reset lists,variables... and prepare for the next run
     enemy.clear();
@@ -496,7 +496,7 @@ void ResetGame()
     mousePressed = false;
     setup();
 }
-void ImportData()
+private void ImportData()
 {
     //Read the json file and import it into the program
     JSONArray userData = loadJSONArray("data/userData.json");
@@ -506,7 +506,7 @@ void ImportData()
         userTopListScore.append(userData.getJSONObject(i).getInt("score"));
     }
 }
-void SaveData()
+private void SaveData()
 {
     //Save the data file and output it as a json file
     JSONArray userNewData = new JSONArray();
@@ -519,7 +519,7 @@ void SaveData()
     }
     saveJSONArray(userNewData, "data/userData.json");
 }
-void CreateUser()
+private void CreateUser()
 {
     while((userTopListName.hasValue(userName) || userName == null) && initName && !nameIsConfirmed) //Determine whether the user is legal (whether it exists in the database, is it a blank name)
         {
@@ -548,7 +548,7 @@ void CreateUser()
     }
     initName = false;
 }
-void CalculateResult()
+private void CalculateResult()
 {
     //Sort users' scores from high to low (bubble sort)
     int tempScore;
@@ -569,9 +569,9 @@ void CalculateResult()
         }
     }
 }
-void ExitGameButtonListener()
+private void ExitGameButtonListener()
 {
-    exitButton.createButton(); //Create an exit button
+    exitButton.CreateButton(); //Create an exit button
     if (exitButton.action) //Check whether the button is triggered
     {
         mousePressed = false;

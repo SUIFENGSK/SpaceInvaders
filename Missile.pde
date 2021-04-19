@@ -1,11 +1,11 @@
 class Missile
 {
-    float x, y;
-    float missileSpeed;
-    String type;
-    Pic playerMissile = new Pic("PlayerMissile"); //Read and import the player’s missile picture
-    Pic enemyMissile = new Pic("EnemyMissile"); //Read and import enemy's missile pictures
-    Missile(float x, float y, String type)
+    public float x, y;
+    public float missileSpeed;
+    private String type;
+    private Pic playerMissile = new Pic("PlayerMissile"); //Read and import the player’s missile picture
+    private Pic enemyMissile = new Pic("EnemyMissile"); //Read and import enemy's missile pictures
+    public Missile(float x, float y, String type)
     {
         this.x = x;
         this.type = type;
@@ -20,17 +20,17 @@ class Missile
             this.y = y + 10;
         }
     }
-    void Launch()
+    public void Launch()
     {
         if (type == "PLAYER")
         {
             imageMode(CENTER);
-            playerMissile.display(x, y, 20, 30); //Display missile image
+            playerMissile.Display(x, y, 20, 30); //Display missile image
         }
         if (type == "ENEMY")
         {
             imageMode(CENTER);
-            enemyMissile.display(x, y, 20, 30); //Display missile image
+            enemyMissile.Display(x, y, 20, 30); //Display missile image
         }
         y -=missileSpeed; //Change the position of the missile
     }

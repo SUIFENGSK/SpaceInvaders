@@ -1,36 +1,36 @@
 class Player
 {
-    float x = width / 2; //Player's initial coordinates
-    float y = height * 7 / 8;
-    float moveSpeed = 10; //Player movement speed
-    float playerSize;
-    int time = 0;
-    int lastTime = 0;
-    ArrayList<Missile> missile = new ArrayList<Missile>();
-    Pic playerShipImg; //Picture of the player's spaceship
-    int missileUpgrade = 0; //The missile status of the player's spaceship
-    String controllerMode;
-    Player(float playerSize, String shipName, String controllerMode) 
+    public float x = width / 2; //Player's initial coordinates
+    public float y = height * 7 / 8;
+    private float moveSpeed = 10; //Player movement speed
+    private float playerSize;
+    private int time = 0;
+    private int lastTime = 0;
+    public ArrayList<Missile> missile = new ArrayList<Missile>();
+    private Pic playerShipImg; //Picture of the player's spaceship
+    public int missileUpgrade = 0; //The missile status of the player's spaceship
+    private String controllerMode;
+    public Player(float playerSize, String shipName, String controllerMode) 
     {
         this.playerSize = playerSize;
         this.controllerMode=controllerMode;
         playerShipImg = new Pic(shipName);
     }
-    Player(float playerSize, String controllerMode) 
+    public Player(float playerSize, String controllerMode) 
     {
         this.playerSize = playerSize;
         this.controllerMode=controllerMode;
         playerShipImg = new Pic("PlayerShip01");
     }
-    void Display()
+    public void Display()
     {
         imageMode(CENTER);
-        playerShipImg.display(x, y, playerSize, playerSize); //Display player's spaceship
+        playerShipImg.Display(x, y, playerSize, playerSize); //Display player's spaceship
         if(controllerMode.equals("Keyboard Mode")) KeyboardMove(); //Keyboard mode
         if(controllerMode.equals("Mouse Mode")) MouseMove(); //Mouse mode
         MissileLaunch(); //The player fires a missile
     }
-    void KeyboardMove()
+    private void KeyboardMove()
     {
         //Direction judgment
         if (keyPressed && keyCode == UP) 
@@ -59,7 +59,7 @@ class Player
         if (y > height - playerSize / 2) y = height - playerSize / 2;
         if (y < playerSize / 2) y = playerSize / 2;
     }
-    void MouseMove()
+    private void MouseMove()
     {
         x=mouseX;
         y=mouseY;
@@ -69,7 +69,7 @@ class Player
         if (y > height - playerSize / 2) y = height - playerSize / 2;
         if (y < playerSize / 2) y = playerSize / 2;
     }
-    void MissileLaunch()
+    private void MissileLaunch()
     {
         //Launch a missile every 700ms by default. With the upgrade of the player’s missiles, the missile’s launch speed can be as fast as 200ms per missile.
         time = millis() - lastTime;

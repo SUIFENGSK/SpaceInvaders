@@ -1,12 +1,11 @@
 class Item
 {
-    float itemSize = 30;
-    float x, y;
-    float ySpeed = 3; //Item's falling speed
-    Pic itemImg; //Picture of the item
-    boolean status = false;
-    String itemType;
-    Item(float randomNum)
+    public float itemSize = 30;
+    public float x, y;
+    private float ySpeed = 3; //Item's falling speed
+    private Pic itemImg; //Picture of the item
+    public String itemType;
+    public Item(float randomNum)
     {
         x = random(itemSize / 2 + 10, width - itemSize / 2 - 10); //Initialize the x-coordinate of the item randomly
         y = 0;
@@ -27,10 +26,10 @@ class Item
             itemType = "UniqueSkill";
         }
     }
-    void Move()
+    public void Move()
     {
         imageMode(CENTER);
-        itemImg.display(x,y,itemSize,itemSize); //Show the picture of the item
+        itemImg.Display(x,y,itemSize,itemSize); //Show the picture of the item
         y +=ySpeed; //Item moves
     }
 }

@@ -29,26 +29,26 @@ public class SpaceInvaders extends PApplet {
 
 
 
-Gif spaceAnimation; //Background animation
-SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm; //Sound effects and background music
-Player player;
-ArrayList < Enemy > enemy;
-ArrayList < ExplosionGif > explosionGif;
-ArrayList < Button > button;
-ArrayList < Item > item;
-int initEnemy,remainingLife,score,degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
-float enemySize = 40, playerSize = 70;
-String userName = null;
-StringList userTopListName = new StringList();
-IntList userTopListScore = new IntList();
-boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
-boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
-String shipName, controllerMode = "Keyboard Mode";
-UiBooster booster;
-ListElement selectedElement;
-FilledForm form;
-ProgressDialog dialog;
-Button exitButton;
+private Gif spaceAnimation; //Background animation
+private SoundFile explosionBgm, spaceBgm, itemBgm, buttonBgm; //Sound effects and background music
+private Player player;
+private ArrayList < Enemy > enemy;
+private ArrayList < ExplosionGif > explosionGif;
+private ArrayList < Button > button;
+private ArrayList < Item > item;
+private int initEnemy,remainingLife,score,degreeOfDifficulty = 5,defaultDegreeOfDifficulty = 5;
+private float enemySize = 40, playerSize = 70;
+private String userName = null;
+private StringList userTopListName = new StringList();
+private IntList userTopListScore = new IntList();
+private boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
+private boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
+private String shipName, controllerMode = "Keyboard Mode";
+private UiBooster booster;
+private ListElement selectedElement;
+private FilledForm form;
+private ProgressDialog dialog;
+private Button exitButton;
 public void setup()
 {
     
@@ -198,14 +198,14 @@ public void draw()
         {
         mousePressed = false; //Mouse state reset
         button.get(4).action = false; //Button state reset
-        exit();
+        exit(); //Exit the game
     }
-    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //Game over and reinitialize Game
+    if ((remainingLife == 0 || enemy.size() == 0) && mousePressed) //Game over and reinitialize the game
     {
         ResetGame();        
     }
 }
-public void GUIInit()
+private void GUIInit()
 {
     for (int i = 10;i <= 30;i++) 
     {
@@ -244,7 +244,7 @@ public void GUIInit()
     button.add(new Button(width / 2, height * 5.7f / 8, "Exit",30));
     exitButton = new Button(30,20,"Exit",16);
 }
-public void GameInit()
+private void GameInit()
 {
     if (initImport) {
         ImportData(); //Import user data (only when starting the program at the very beginning)
@@ -271,7 +271,7 @@ public void GameInit()
     }
     enemy.get(0).yMove = true; //Set the movement state of the first enemy to true
 }
-public void GUIStartLoop()
+private void GUIStartLoop()
 {
     spaceBgm.amp(1); //Background music volume setting
     imageMode(CENTER);  
@@ -285,10 +285,10 @@ public void GUIStartLoop()
     textSize(20);
     text("Developed by Shuokai Ma", width / 2, height * 7 / 8);
     for (int i = 0; i < button.size(); i++) {
-        button.get(i).createButton(); //Show buttons
+        button.get(i).CreateButton(); //Show buttons
     }
 }
-public void DisplayAndCheckItem()
+private void DisplayAndCheckItem()
 {
     if (random(0, 1)<0.003f - (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.0005f) //Probability of the item depends on the degree of difficulty
     {
@@ -307,15 +307,15 @@ public void DisplayAndCheckItem()
                 remainingLife++;
                 itemBgm.play();
             }
-            else if (item.get(i).itemType == "MissileUp") //Item type 2
+            else if (item.get(i).itemType == "MissileUp") //Item type 2 (Missile firing rate increased)
             {
                 player.missileUpgrade +=50;
                 itemBgm.play();
             }
-            else if (item.get(i).itemType == "UniqueSkill") //Item type 3
+            else if (item.get(i).itemType == "UniqueSkill") //Item type 3 (Clear all enemies in the current screen)
             {
                 itemBgm.play();
-                for (int j = enemy.size() - 1;j >= 0;j--)
+                for (int j = enemy.size() - 1;j >= 0;j--) //Scan all enemy spaceships and its missiles in the game interface, and then clear them
                 {
                     if (enemy.get(j).y>0 && enemy.get(j).y<height + enemySize)
                     {
@@ -326,14 +326,14 @@ public void DisplayAndCheckItem()
                     }
                 }
             }
-            item.remove(i);
+            item.remove(i); //After the user gets the item, the item will disappear
         }        
     } 
 }
-public void EnemyMove()
+private void EnemyMove()
 {
-    if (enemy.size() == 0) return;
-    else enemy.get(0).yMove = true;
+    if (enemy.size() == 0) return; //If there are no more enemies, exit the function
+    else enemy.get(0).yMove = true; //Else set the movement state of the first enemy to true
     for (int i = 0; i < enemy.size(); i++) 
         {
         //Prevent collision
@@ -346,21 +346,20 @@ public void EnemyMove()
         }
         //Move
         enemy.get(i).Move();
-        if (enemy.get(i).y>height + enemySize)
+        if (enemy.get(i).y>height + enemySize) //If the enemy flies out of the game interface, remove the enemy
         {
             enemy.remove(i);
         }
-        //println(i, enemy.get(0).yMove);
     }
 }
-public void CheckEnemyIsAlive()
+private void CheckEnemyIsAlive()
 {
     for (int i = 0;i < enemy.size();i++)
     {
-        if (enemy.get(i).isDestroyed && enemy.get(i).missile.size() == 0) enemy.remove(i);
+        if (enemy.get(i).isDestroyed && enemy.get(i).missile.size() == 0) enemy.remove(i); //If the enemy is destroyed and its missile is no longer in the game interface, remove the enemy
     }
 }
-public void PlayerMissileJudgment()
+private void PlayerMissileJudgment()
 {
     for (int i = 0; i < player.missile.size(); i++)
         {
@@ -369,66 +368,65 @@ public void PlayerMissileJudgment()
             if (player.missile.get(i).x>enemy.get(j).x - enemySize / 2 && player.missile.get(i).x<enemy.get(j).x + enemySize / 2 &&
                 player.missile.get(i).y>enemy.get(j).y - enemySize / 2 && player.missile.get(i).y<enemy.get(j).y + enemySize / 2) //Boundary judgment
             {
-                explosionBgm.play();
-                explosionGif.add(new ExplosionGif (player.missile.get(i).x, player.missile.get(i).y, this));   
-                enemy.get(j).isDestroyed = true;
-                enemy.get(j).y =- height;
-                player.missile.remove(i);
-                score +=100;
-                //if (enemy.size() == 0) break;
-                //enemy.get(0).yMove = true;                
+                explosionBgm.play(); //Play explosion sound
+                explosionGif.add(new ExplosionGif (player.missile.get(i).x, player.missile.get(i).y, this)); //Add explosion animation  
+                enemy.get(j).isDestroyed = true; //Mark the enemy has been destroyed
+                enemy.get(j).y =- height; //Move the enemy's position outside the border
+                player.missile.remove(i); //Remove the missile that the player hits the enemy
+                score +=100; //Player score increase              
                 break;
             }
         }
     }
-    DisplayExplosion();
+    DisplayExplosion(); //Play explosion animation effect
 }
-public void EnemyMissileJudgment()
+private void EnemyMissileJudgment()
 {
     for (int i = 0; i < enemy.size(); i++)
         {
         for (int j = 0; j < enemy.get(i).missile.size(); j++)
         {
             if (enemy.get(i).missile.get(j).x>player.x - playerSize / 2 && enemy.get(i).missile.get(j).x<player.x + playerSize / 2 &&
-                enemy.get(i).missile.get(j).y>player.y - playerSize / 2 && enemy.get(i).missile.get(j).y<player.y + playerSize / 2)
+                enemy.get(i).missile.get(j).y>player.y - playerSize / 2 && enemy.get(i).missile.get(j).y<player.y + playerSize / 2) //Boundary judgment
             {
-                explosionBgm.play();
-                explosionGif.add(new ExplosionGif (enemy.get(i).missile.get(j).x, enemy.get(i).missile.get(j).y, this));
-                enemy.get(i).missile.remove(j);
-                remainingLife--;
-                score -=50;
-                if (score < 0) score = 0;
+                explosionBgm.play(); //Play explosion sound
+                explosionGif.add(new ExplosionGif (enemy.get(i).missile.get(j).x, enemy.get(i).missile.get(j).y, this)); //Add explosion animation  
+                enemy.get(i).missile.remove(j); //Remove the missile that the enemy hits the player
+                remainingLife--; //Player's lives lost
+                score -=50; //Player score reduced
+                if (score < 0) score = 0; //The minimum player score is 0
                 break;
             }
         }
     }
     DisplayExplosion();
 }
-public void CollideWithTheEnemy()
+private void CollideWithTheEnemy()
 {
     for (int i = 0; i < enemy.size(); i++)
         {
         if (((enemy.get(i).x + enemySize / 2>player.x - playerSize / 2 && enemy.get(i).x + enemySize / 2<player.x + playerSize / 2) ||
            (enemy.get(i).x - enemySize / 2>player.x - playerSize / 2 && enemy.get(i).x - enemySize / 2<player.x + playerSize / 2)) &&
            ((enemy.get(i).y + enemySize / 2>player.y - playerSize / 2 && enemy.get(i).y + enemySize / 2<player.y + playerSize / 2) ||
-           (enemy.get(i).y - enemySize / 2>player.y - playerSize / 2 && enemy.get(i).y - enemySize / 2<player.y + playerSize / 2)))
+           (enemy.get(i).y - enemySize / 2>player.y - playerSize / 2 && enemy.get(i).y - enemySize / 2<player.y + playerSize / 2))) //Boundary judgment
         {
-            explosionBgm.play();
-            explosionGif.add(new ExplosionGif ((enemy.get(i).x + player.x) / 2,(enemy.get(i).y + player.y) / 2, this));
-            enemy.get(i).isDestroyed = true;
-            enemy.get(i).y =- height;
-            remainingLife--;
-            score -=50;
-            if (score < 0) score = 0;
-            if (enemy.size() == 0) break;
-            enemy.get(0).yMove = true;
+            explosionBgm.play(); //Play explosion sound
+            explosionGif.add(new ExplosionGif ((enemy.get(i).x + player.x) / 2,(enemy.get(i).y + player.y) / 2, this)); //Add explosion animation
+            enemy.get(i).isDestroyed = true; //Mark the enemy has been destroyed
+            enemy.get(i).y =- height; //Move the enemy's position outside the border
+            remainingLife--; //Player's lives lost
+            score -=50; //Player score reduced
+            if (score < 0) score = 0; //The minimum player score is 0
+            if (enemy.size() == 0) break; //If there are no more enemies, exit the function
+            enemy.get(0).yMove = true; //Set the movement state of the first enemy to true
             break;
         }
     }
     DisplayExplosion();
 }
-public void DisplayInfo()
+private void DisplayInfo()
 {
+    //Display real-time data of the game
     fill(255);
     textSize(16);
     textAlign(LEFT);
@@ -441,8 +439,11 @@ public void DisplayInfo()
     text("Enemy:", width * 6 / 8, 80);
     text(enemy.size(), width * 7 / 8, 80);
 }
-public void CalculateAndDisplayTheFinalResult()
+private void CalculateAndDisplayTheFinalResult()
 {
+    //If it is a new game, it is determined whether the user already exists in the database, 
+    //and if it exists and the user has broken his record, the user's highest score is updated. 
+    //If the user does not exist in the database, add the user's name and current score.
     if (isNewGame) {
         isNewGame = false;
         if (!userTopListName.hasValue(userName)) 
@@ -461,9 +462,10 @@ public void CalculateAndDisplayTheFinalResult()
                 }
             }
         }
-        CalculateResult();
-        SaveData();
+        CalculateResult(); //Update leaderboard
+        SaveData(); //Save data and export data file
     }
+    //Show the final game result
     fill(255);
     textAlign(CENTER);
     textSize(65);
@@ -477,6 +479,7 @@ public void CalculateAndDisplayTheFinalResult()
     text(score, width / 2 + 30, height * 3 / 8);
     textAlign(CENTER);
     textSize(30);
+    //Show the leaderboard
     text("Leaderboard - TOP 3", width / 2, height * 4.25f / 8);
     int displayNum;
     if (userTopListName.size()>= 3) displayNum = 3;
@@ -490,19 +493,20 @@ public void CalculateAndDisplayTheFinalResult()
     textSize(20);
     text("Click the left mouse button to restart the game", width / 2, height * 7 / 8);
 }
-public void DisplayExplosion()
+private void DisplayExplosion()
 {
     for (int i = 0; i < explosionGif.size(); i++)
         {
-        explosionGif.get(i).Display();
-        if (!explosionGif.get(i).status)
+        explosionGif.get(i).Display(); //Play explosion effect
+        if (!explosionGif.get(i).status) //If the effect is over, remove the effect
         {
             explosionGif.remove(i);
         }
     }
 }
-public void ResetGame()
+private void ResetGame()
 {
+    //Reset lists,variables... and prepare for the next run
     enemy.clear();
     item.clear();
     //spaceBgm.stop();
@@ -516,8 +520,9 @@ public void ResetGame()
     mousePressed = false;
     setup();
 }
-public void ImportData()
+private void ImportData()
 {
+    //Read the json file and import it into the program
     JSONArray userData = loadJSONArray("data/userData.json");
     for (int i = 0; i < userData.size(); i++)
         {
@@ -525,8 +530,9 @@ public void ImportData()
         userTopListScore.append(userData.getJSONObject(i).getInt("score"));
     }
 }
-public void SaveData()
+private void SaveData()
 {
+    //Save the data file and output it as a json file
     JSONArray userNewData = new JSONArray();
     for (int i = 0; i < userTopListName.size(); i++)
         {
@@ -537,14 +543,14 @@ public void SaveData()
     }
     saveJSONArray(userNewData, "data/userData.json");
 }
-public void CreateUser()
+private void CreateUser()
 {
-    while((userTopListName.hasValue(userName) || userName == null) && initName && !nameIsConfirmed)
+    while((userTopListName.hasValue(userName) || userName == null) && initName && !nameIsConfirmed) //Determine whether the user is legal (whether it exists in the database, is it a blank name)
         {
         mousePressed = false;
         userName = new UiBooster().showTextInputDialog("Please enter your name:");
         if (userName == null || userName.equals("")) new UiBooster().showErrorDialog("The name is not allowed to be empty!", "ERROR");
-        if (userTopListName.hasValue(userName) && !userName.equals(""))
+        if (userTopListName.hasValue(userName) && !userName.equals("")) //If the current user name already exists in the database, it will prompt a message
         {
             booster = new UiBooster();
             booster.showConfirmDialog(
@@ -566,8 +572,9 @@ public void CreateUser()
     }
     initName = false;
 }
-public void CalculateResult()
+private void CalculateResult()
 {
+    //Sort users' scores from high to low (bubble sort)
     int tempScore;
     String tempName;
     for (int i = 0; i < userTopListName.size() - 1; i++) 
@@ -586,14 +593,14 @@ public void CalculateResult()
         }
     }
 }
-public void ExitGameButtonListener()
+private void ExitGameButtonListener()
 {
-    exitButton.createButton();
-    if (exitButton.action)
+    exitButton.CreateButton(); //Create an exit button
+    if (exitButton.action) //Check whether the button is triggered
     {
         mousePressed = false;
         exitButton.action = false;
-        booster = new UiBooster();
+        booster = new UiBooster();//Second reminder
         booster.showConfirmDialog(
             "Are you sure to exit the game? Please note that your game data will not be saved!",
             "Exit Game",
@@ -609,7 +616,7 @@ public void ExitGameButtonListener()
         }
        );
     }
-    if (exitIsConfirmed) 
+    if (exitIsConfirmed) //If the button is triggered, exit the game
     {
         ResetGame();
         exitIsConfirmed = false;
@@ -617,24 +624,26 @@ public void ExitGameButtonListener()
 }
 class Button 
 {
-    float x, y;
-    String text;
-    float buttonWidth = 200, buttonHeight = 80;
-    float R = 225, G = 225, B = 225;
-    boolean action = false, buttonBgmControl = true;
-    float textSize;
-    Button(float x, float y, String text, float textSize) 
+    public float x, y;
+    private String text;
+    public float buttonWidth = 200, buttonHeight = 80; //Set the size of the button
+    private float R = 225, G = 225, B = 225; //Set the color of the button
+    public boolean action = false;
+    private boolean buttonBgmControl = true;
+    private float textSize;
+    public Button(float x, float y, String text, float textSize) 
     {
         this.x = x;
         this.y = y;
         this.text = text;
         this.textSize = textSize;
     }
-    public void createButton()
+    public void CreateButton()
     {
+        //Create and display button
         pushMatrix();
         stroke(0);
-        render();
+        Render(); //Render button
         rectMode(CENTER);
         fill(R, G, B);
         //rect(x, y, buttonWidth, buttonHeight);
@@ -642,12 +651,12 @@ class Button
         textAlign(CENTER, CENTER);
         text(text, x, y);
         popMatrix();
-        checkButton();
-        buttonAction();
+        //Check whether the button is triggered
+        CheckButton();
     }
-    public void render() 
+    private void Render() 
     {
-        
+        //If the mouse position coincides with the button position, re-render the button (change the color of the button)
         if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) {
             R = 138;
             G = 217;
@@ -664,48 +673,46 @@ class Button
             buttonBgmControl = true;
         }
     }
-    public void checkButton() 
+    private void CheckButton() 
     {
+        //Check whether the button is triggered. Return true if triggered
         if (mouseX > x - buttonWidth / 2 && mouseX < x + buttonWidth / 2 && mouseY > y - buttonHeight / 2 && mouseY < y + buttonHeight / 2) 
         {
             if (mousePressed && action == false)  action = true;
             else  action = false;
         }
     }
-    public void buttonAction() 
-    {
-        if (action) {
-            //println("hello");
-        }
-    }
 }
 class Enemy
 {
-    float enemySize;
-    float x, y;
-    float xSpeed = 3, ySpeed = 3;
-    int time = 0;
-    int lastTime = 0;
-    boolean xyDirection, yMove = false, isDestroyed = false;
-    ArrayList<Missile> missile = new ArrayList<Missile>();
-    Pic enemyShipImg = new Pic("EnemyShip");
-    Enemy(float y, float enemySize)
+    private float enemySize;
+    public float x, y;
+    private float xSpeed = 3, ySpeed = 3; //Initialization speed of the enemy spaceship
+    private int time = 0;
+    private int lastTime = 0;
+    private boolean xyDirection;
+    public boolean yMove = false, isDestroyed = false;
+    public ArrayList<Missile> missile = new ArrayList<Missile>();
+    private Pic enemyShipImg = new Pic("EnemyShip"); //Read and import enemy spaceship's picture
+    public Enemy(float y, float enemySize)
     {
-        x = random(enemySize / 2 + 10, width - enemySize / 2 - 10);
-        this.y = y;
-        this.enemySize = enemySize;
+        x = random(enemySize / 2 + 10, width - enemySize / 2 - 10); //Initialize the x-coordinate of the item randomly
+        this.y = y; //Import the y-coordinate of the enemy spaceship
+        this.enemySize = enemySize; //Import the size of the enemy spaceship
     }
     public void Move()
     {
-        if (!isDestroyed) 
+        if (!isDestroyed) //If the enemy spaceship is not destroyed, the enemy spaceship can move
         {
             time = millis() - lastTime;
             imageMode(CENTER);
-            enemyShipImg.display(x,y,enemySize,enemySize);
-            if (time > 500) {
+            enemyShipImg.Display(x,y,enemySize,enemySize); //Display enemy spaceship's picture
+            if (time > 500) {//The enemy spaceship changes direction every 500ms
                 lastTime = millis();
-                if (random(0, 1)<0.5f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.06f) xyDirection = false; //y-direction
-                else xyDirection = true; //x-direction
+                //change y-direction. The probability of the enemy’s y-direction change depends on the degree of difficulty
+                if (random(0, 1)<0.5f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.06f) xyDirection = false; 
+                //change x-direction
+                else xyDirection = true; 
             }
             if (xyDirection) x += xSpeed;
             else if (yMove && !xyDirection) 
@@ -715,58 +722,56 @@ class Enemy
             {
                 x +=xSpeed;
             }
-            //println(x);
+            //If the enemy plane hits the left and right borders, it will bounce back
             if (x > width - enemySize / 2 || x < enemySize / 2) xSpeed =- xSpeed;
             if (x > width - enemySize / 2) x = width - enemySize / 2;
             if (x < enemySize / 2) x = enemySize / 2;
-            if (y > 0 && y < height - 30) 
+            if (y > 0 && y < height - 30) //Only enemy planes above 30 pixels of the bottom boundary are allowed to launch missiles
             {
                 MissileAdd();
             }
         }
-        MissileLaunch();
-        
+        MissileLaunch();        
     }
-    public void MissileAdd()
+    private void MissileAdd()
     {
-        if (!isDestroyed && random(0, 1)<0.01f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.001f) 
+        if (!isDestroyed && random(0, 1)<0.01f + (degreeOfDifficulty - defaultDegreeOfDifficulty) * 0.001f) //The firing frequency of enemy missiles depends on the difficulty of the game
         {
-            missile.add(new Missile(x, y, "ENEMY"));
+            missile.add(new Missile(x, y, "ENEMY")); //Add enemy's missile
         }        
     }
-    public void MissileLaunch()
+    private void MissileLaunch()
     {
         if (missile.size()>0) {
             for (int i = 0; i < missile.size(); i++) 
             {
-                missile.get(i).Launch();
+                missile.get(i).Launch(); //Launch missile
                 if (missile.get(i).y>height) 
                 {
-                    missile.remove(i);
+                    missile.remove(i); //If the missile coordinates are beyond the game interface, remove the missile
                 }
             }
         }
-        //println(missile.size());F
     }
 }
 class ExplosionGif
 {
-    Gif explosion;
-    float x, y;
-    boolean status = true;
-    ExplosionGif (float x, float y, PApplet explosionGif)
+    private Gif explosion;
+    private float x, y;
+    public boolean status = true;
+    public ExplosionGif (float x, float y, PApplet explosionGif)
     {
-        explosion = new Gif (explosionGif, "Explosion.gif");
-        explosion.play();
-        this.x = x;
+        explosion = new Gif (explosionGif, "Explosion.gif"); //Read and import the gif-image of the explosion
+        explosion.play(); //Set the gif-image of the explosion's status to play
+        this.x = x; //Get explosion coordinates
         this.y = y;
     }
     public void Display()
     {
-        if (explosion.currentFrame()<25) 
+        if (explosion.currentFrame()<25)
         {
             image(explosion, x, y, 120, 120);
-        } else 
+        } else //If the gif-image of the current explosion has been played once, stop playing
         {
             explosion.stop();
             status = false;
@@ -775,28 +780,27 @@ class ExplosionGif
 }
 class Item
 {
-    float itemSize = 30;
-    float x, y;
-    float ySpeed = 3;
-    Pic itemImg;
-    boolean status = false;
-    String itemType;
-    Item(float randomNum)
+    public float itemSize = 30;
+    public float x, y;
+    private float ySpeed = 3; //Item's falling speed
+    private Pic itemImg; //Picture of the item
+    public String itemType;
+    public Item(float randomNum)
     {
-        x = random(itemSize / 2 + 10, width - itemSize / 2 - 10);
+        x = random(itemSize / 2 + 10, width - itemSize / 2 - 10); //Initialize the x-coordinate of the item randomly
         y = 0;
-        if (randomNum < 0.45f) 
+        if (randomNum < 0.45f) //There is a 45 percent chance of getting an extra life
         {
             itemImg = new Pic("LifeUp");
             itemType = "LifeUp";
         }
-        if (randomNum >= 0.45f && randomNum < 0.9f) 
+        if (randomNum >= 0.45f && randomNum < 0.9f) //There is a 45 percent chance of increasing missile firing rate
         {
             itemImg = new Pic("MissileUp");
             itemType = "MissileUp";
         }
         
-        if (randomNum >=0.9f) 
+        if (randomNum >=0.9f) //There is a 10 percent chance of clearing all enemies in the current screen
         {
             itemImg = new Pic("UniqueSkill");
             itemType = "UniqueSkill";
@@ -805,27 +809,27 @@ class Item
     public void Move()
     {
         imageMode(CENTER);
-        itemImg.display(x,y,itemSize,itemSize);
-        y +=ySpeed;
+        itemImg.Display(x,y,itemSize,itemSize); //Show the picture of the item
+        y +=ySpeed; //Item moves
     }
 }
 class Missile
 {
-    float x, y;
-    float missileSpeed;
-    String type;
-    Pic playerMissile = new Pic("PlayerMissile");
-    Pic enemyMissile = new Pic("EnemyMissile");
-    Missile(float x, float y, String type)
+    public float x, y;
+    public float missileSpeed;
+    private String type;
+    private Pic playerMissile = new Pic("PlayerMissile"); //Read and import the player’s missile picture
+    private Pic enemyMissile = new Pic("EnemyMissile"); //Read and import enemy's missile pictures
+    public Missile(float x, float y, String type)
     {
         this.x = x;
         this.type = type;
-        if (type == "PLAYER")
+        if (type == "PLAYER") //Player's missile speed and initial position
         {
             missileSpeed = 10;
             this.y = y - 10;
         }
-        if (type == "ENEMY") 
+        if (type == "ENEMY") //Enemy's missile speed and initial position
         {
             missileSpeed =- 10;
             this.y = y + 10;
@@ -836,53 +840,53 @@ class Missile
         if (type == "PLAYER")
         {
             imageMode(CENTER);
-            playerMissile.display(x, y, 20, 30);
+            playerMissile.Display(x, y, 20, 30); //Display missile image
         }
         if (type == "ENEMY")
         {
             imageMode(CENTER);
-            enemyMissile.display(x, y, 20, 30);
+            enemyMissile.Display(x, y, 20, 30); //Display missile image
         }
-        y -=missileSpeed;
+        y -=missileSpeed; //Change the position of the missile
     }
 }
 class Pic {
-    PImage img;
-    int k;
-    Pic(String filename) 
+    private PImage img;
+    private int k;
+    public Pic(String filename) 
     {
-        img = loadImage(filename + ".png");
+        img = loadImage(filename + ".png"); //Read and import image data
     }
-    Pic(String filename, int temp) 
+    public Pic(String filename, int temp) 
     {
         k = temp;
-        img = loadImage(filename + k + ".png");
+        img = loadImage(filename + k + ".png"); //Read and import image data
     }
-    public void display(float x, float y, float pWidth, float pHeight)
+    public void Display(float x, float y, float pWidth, float pHeight)
     {
         imageMode(CENTER);
-        image(img, x, y, pWidth, pHeight); //<>//
+        image(img, x, y, pWidth, pHeight); //Display image
     }
 }
 class Player
 {
-    float x = width / 2;
-    float y = height * 7 / 8;
-    float moveSpeed = 10;
-    float playerSize;
-    int time = 0;
-    int lastTime = 0;
-    ArrayList<Missile> missile = new ArrayList<Missile>();
-    Pic playerShipImg;
-    int missileUpgrade = 0;
-    String controllerMode;
-    Player(float playerSize, String shipName, String controllerMode) 
+    public float x = width / 2; //Player's initial coordinates
+    public float y = height * 7 / 8;
+    private float moveSpeed = 10; //Player movement speed
+    private float playerSize;
+    private int time = 0;
+    private int lastTime = 0;
+    public ArrayList<Missile> missile = new ArrayList<Missile>();
+    private Pic playerShipImg; //Picture of the player's spaceship
+    public int missileUpgrade = 0; //The missile status of the player's spaceship
+    private String controllerMode;
+    public Player(float playerSize, String shipName, String controllerMode) 
     {
         this.playerSize = playerSize;
         this.controllerMode=controllerMode;
         playerShipImg = new Pic(shipName);
     }
-    Player(float playerSize, String controllerMode) 
+    public Player(float playerSize, String controllerMode) 
     {
         this.playerSize = playerSize;
         this.controllerMode=controllerMode;
@@ -891,13 +895,14 @@ class Player
     public void Display()
     {
         imageMode(CENTER);
-        playerShipImg.display(x, y, playerSize, playerSize);
-        if(controllerMode.equals("Keyboard Mode")) KeyboardMove();
-        if(controllerMode.equals("Mouse Mode")) MouseMove();
-        MissileLaunch();
+        playerShipImg.Display(x, y, playerSize, playerSize); //Display player's spaceship
+        if(controllerMode.equals("Keyboard Mode")) KeyboardMove(); //Keyboard mode
+        if(controllerMode.equals("Mouse Mode")) MouseMove(); //Mouse mode
+        MissileLaunch(); //The player fires a missile
     }
-    public void KeyboardMove()
+    private void KeyboardMove()
     {
+        //Direction judgment
         if (keyPressed && keyCode == UP) 
         {
             y -=moveSpeed;
@@ -918,46 +923,41 @@ class Player
             x +=moveSpeed;
             keyCode = 0;
         }
+        //Boundary judgment
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;
         if (y < playerSize / 2) y = playerSize / 2;
     }
-    public void MouseMove()
+    private void MouseMove()
     {
         x=mouseX;
         y=mouseY;
+        //Boundary judgment
         if (x > width - playerSize / 2) x = width - playerSize / 2;
         if (x < playerSize / 2) x = playerSize / 2;
         if (y > height - playerSize / 2) y = height - playerSize / 2;
         if (y < playerSize / 2) y = playerSize / 2;
     }
-    public void MissileLaunch()
+    private void MissileLaunch()
     {
+        //Launch a missile every 700ms by default. With the upgrade of the player’s missiles, the missile’s launch speed can be as fast as 200ms per missile.
         time = millis() - lastTime;
         if (missileUpgrade > 500) missileUpgrade = 500;
         if (time > 700 - missileUpgrade) {
             lastTime = millis();
-            missile.add(new Missile(x, y, "PLAYER"));
+            missile.add(new Missile(x, y, "PLAYER")); //Add player's missile
         }
-        /*
-        if (keyPressed && key==' ') 
-    {
-        key=0;
-        missile.add(new Missile(x, y, "PLAYER"));
-    }
-        */
         if (missile.size()>0) {
             for (int i = 0; i < missile.size(); i++) 
             {
-                missile.get(i).Launch();
+                missile.get(i).Launch();  //Launch missile
                 if (missile.get(i).y<0) 
                 {
-                    missile.remove(i);
+                    missile.remove(i); //If the missile coordinates are beyond the game interface, remove the missile
                 }
             }
         }
-        //println(missile.size());
     }
 }
   public void settings() {  size(700, 900); }
