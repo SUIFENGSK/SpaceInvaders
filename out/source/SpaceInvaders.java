@@ -41,11 +41,10 @@ private float enemySize = 40, playerSize = 70;
 private String userName = null;
 private StringList userTopListName = new StringList();
 private IntList userTopListScore = new IntList();
-private boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false, shipIsChanged = false;
+private boolean isNewGame = true, initImport = true, initName = true, nameIsConfirmed = false;
 private boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
 private String shipName, controllerMode = "Keyboard Mode";
 private UiBooster booster;
-private ListElement selectedElement;
 private FilledForm form;
 private ProgressDialog dialog;
 private Button exitButton;
@@ -114,7 +113,6 @@ public void draw()
         mousePressed = false; //Mouse state reset
         button.get(1).action = false; //Button state reset
         personalizedSettings = true;
-        shipIsChanged = true;
         booster = new UiBooster(); //Personalized Settings' form
     do {
             form = new UiBooster()
