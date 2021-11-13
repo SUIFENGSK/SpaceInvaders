@@ -21,7 +21,7 @@ private boolean isNewGame = true, initImport = true, initName = true, nameIsConf
 private boolean personalizedSettings = false, exitIsConfirmed = false, isFirstTime = true;
 private String shipName, controllerMode = "Keyboard Mode";
 private UiBooster booster;
-private FilledForm form;
+private Form form;
 private ProgressDialog dialog;
 private Button exitButton;
 public void setup()
